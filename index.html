@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EverDNA — ブランドの本質を言語化する</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #111111;
+      --gray-900: #1a1a1a;
+      --gray-600: #666666;
+      --gray-400: #aaaaaa;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --accent: #2a5cff;
+      --accent-light: #e8eeff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--black);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 9px 22px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 48px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-inner { max-width: 680px; }
+
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 28px;
+    }
+    .hero-title strong {
+      font-weight: 700;
+    }
+    .hero-title .accent { color: var(--accent); }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--gray-600);
+      line-height: 1.85;
+      margin-bottom: 44px;
+      max-width: 520px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 16px 36px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+    .hero-note {
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section {
+      padding: 100px 48px;
+    }
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 300;
+      line-height: 1.25;
+      color: var(--black);
+      margin-bottom: 56px;
+    }
+    .section-title strong { font-weight: 700; }
+
+    /* ─── FEATURES ─── */
+    .features { background: var(--gray-100); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      padding: 48px 40px;
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .feature-icon svg { width: 28px; height: 28px; }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .feature-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+    }
+
+    /* ─── STEPS ─── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    .step {
+      padding: 40px;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -12px;
+      top: 50px;
+      font-size: 20px;
+      color: var(--gray-400);
+    }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .step-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+    }
+
+    /* ─── BOTTOM CTA ─── */
+    .cta-section {
+      background: var(--black);
+      text-align: center;
+    }
+    .cta-section .section-label { color: var(--gray-400); }
+    .cta-title {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+    .cta-title strong { font-weight: 700; }
+    .cta-desc {
+      font-size: 16px;
+      color: var(--gray-400);
+      margin-bottom: 44px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-white {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: var(--white);
+      padding: 16px 40px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-white:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .footer-logo {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .hero { padding: 100px 24px 60px; }
+      section { padding: 72px 24px; }
+      footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+      .step:not(:last-child)::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="logo" href="/">EverDNA</a>
+    <a class="nav-cta" href="#form">無料診断を試す</a>
+  </nav>
+
+  <!-- HERO -->
+  <section style="padding:0">
+    <div class="hero">
+      <div class="hero-inner">
+        <p class="hero-label">Brand DNA Diagnosis</p>
+        <h1 class="hero-title">
+          あなたの企業の<br>
+          <strong>本質</strong>を、<br>
+          言語で<span class="accent">可視化</span>する。
+        </h1>
+        <p class="hero-desc">
+          企業URLを入力するだけで、AIがブランドの価値観・トーン・
+          ポジショニングを分析。「自社らしさ」を言葉にするための
+          ブランドDNAレポートをお届けします。
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#form">無料で診断する →</a>
+          <span class="hero-note">登録不要・約2分で完了</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <p class="section-label">Features</p>
+      <h2 class="section-title">EverDNAで<strong>できること</strong></h2>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">ブランド価値観の抽出</h3>
+          <p class="feature-desc">
+            ホームページのテキスト・トーン・構造をAIが読み解き、
+            御社ブランドが大切にしている価値観を言語化します。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">コミュニケーションDNA</h3>
+          <p class="feature-desc">
+            文章のトーン・言葉の選び方・伝え方のクセを分析。
+            採用・広報・マーケ資料に一貫性をもたらします。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">レポートをメールで受信</h3>
+          <p class="feature-desc">
+            診断結果はPDF形式のブランドDNAレポートとしてお送りします。
+            チームで共有してすぐに活用できます。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- STEPS -->
+  <section id="how">
+    <div class="section-inner">
+      <p class="section-label">How it works</p>
+      <h2 class="section-title"><strong>3ステップ</strong>で診断完了</h2>
+      <div class="steps-grid">
+
+        <div class="step">
+          <p class="step-number">Step 01</p>
+          <h3 class="step-title">情報を入力</h3>
+          <p class="step-desc">
+            企業名・URL・業種・メールアドレスを入力フォームに記入します。
+            特別なアカウント登録は不要です。
+          </p>
+        </div>
+
+        <div class="step">
+          <p class="step-number">Step 02</p>
+          <h3 class="step-title">AIが分析</h3>
+          <p class="step-desc">
+            AIがWebサイトの内容・言葉・構造を読み込み、
+            ブランドのDNAを多角的に分析します。
+          </p>
+        </div>
+
+        <div class="step">
+          <p class="step-number">Step 03</p>
+          <h3 class="step-title">レポートを受け取る</h3>
+          <p class="step-desc">
+            数分以内にブランドDNAレポートをメールでお送りします。
+            すぐにチームで共有・活用できます。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="form">
+    <div class="section-inner">
+      <p class="section-label">Get Started</p>
+      <h2 class="cta-title">あなたの企業の<strong>DNAを</strong><br>知ってみませんか？</h2>
+      <p class="cta-desc">
+        今なら無料。診断フォームに記入するだけで、
+        ブランドの本質を言語化したレポートをお届けします。
+      </p>
+      <a class="btn-white" href="https://docs.google.com/forms/d/e/1FAIpQLSd8DyAXkzBR0JyyZIIR0tHzvl6KEbSLZx8OqdD5qxjTcEsfEw/viewform?usp=publish-editor" target="_blank" rel="noopener">
+        無料診断フォームへ →
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">EverDNA</span>
+    <span class="footer-copy">© 2026 EverDNA. All rights reserved.</span>
+  </footer>
+
+</body>
+</html>
