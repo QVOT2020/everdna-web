@@ -51,6 +51,22 @@
       text-transform: uppercase;
     }
 
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--black); }
+
     .nav-cta {
       font-size: 13px;
       font-weight: 500;
@@ -90,9 +106,7 @@
       color: var(--black);
       margin-bottom: 28px;
     }
-    .hero-title strong {
-      font-weight: 700;
-    }
+    .hero-title strong { font-weight: 700; }
     .hero-title .accent { color: var(--accent); }
 
     .hero-desc {
@@ -106,7 +120,7 @@
     .hero-actions {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 16px;
       flex-wrap: wrap;
     }
 
@@ -123,15 +137,29 @@
     }
     .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
 
+    .btn-secondary {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: transparent;
+      border: 1.5px solid var(--black);
+      padding: 15px 32px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { background: var(--accent); color: var(--white); border-color: var(--accent); transform: translateY(-1px); }
+
     .hero-note {
       font-size: 13px;
       color: var(--gray-400);
+      width: 100%;
+      margin-top: 4px;
     }
 
     /* ─── SECTION COMMON ─── */
-    section {
-      padding: 100px 48px;
-    }
+    section { padding: 100px 48px; }
     .section-inner {
       max-width: 1100px;
       margin: 0 auto;
@@ -191,7 +219,7 @@
     /* ─── STEPS ─── */
     .steps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 0;
       position: relative;
     }
@@ -229,6 +257,227 @@
       line-height: 1.75;
     }
 
+    /* ─── PRICING ─── */
+    .pricing { background: var(--gray-100); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2px;
+      max-width: 760px;
+    }
+
+    .plan-card {
+      background: var(--white);
+      padding: 48px 40px;
+      position: relative;
+    }
+
+    .plan-card.plan-paid {
+      background: var(--black);
+    }
+
+    .plan-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .plan-card.plan-paid .plan-badge { color: #7090ff; }
+
+    .plan-price {
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .plan-card.plan-paid .plan-price { color: var(--white); }
+
+    .plan-price-unit {
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .plan-price-note {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 28px;
+    }
+    .plan-card.plan-paid .plan-price-note { color: #666; }
+
+    .plan-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+    .plan-card.plan-paid .plan-desc { color: #999; }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 36px;
+    }
+
+    .plan-features li {
+      font-size: 14px;
+      color: var(--gray-600);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .plan-card.plan-paid .plan-features li {
+      color: #bbb;
+      border-bottom-color: #222;
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .plan-features li.locked::before {
+      content: '—';
+      color: var(--gray-400);
+    }
+    .plan-features li.locked { color: var(--gray-400); }
+
+    .btn-plan-free {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 14px 0;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-plan-free:hover { background: var(--accent); }
+
+    .btn-plan-paid {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: var(--white);
+      padding: 14px 0;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-plan-paid:hover { background: var(--accent-light); }
+
+    .plan-popular {
+      position: absolute;
+      top: -1px;
+      right: 40px;
+      background: var(--accent);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+    }
+
+    /* ─── SAMPLE REPORT ─── */
+    .sample-section { background: var(--white); }
+
+    .sample-card {
+      background: var(--gray-100);
+      border-left: 3px solid var(--accent);
+      padding: 40px 48px;
+      max-width: 720px;
+    }
+
+    .sample-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .sample-company {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+
+    .sample-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--black);
+      margin: 24px 0 8px;
+    }
+
+    .sample-text {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.8;
+    }
+
+    .sample-values {
+      list-style: none;
+      margin: 12px 0;
+    }
+    .sample-values li {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      gap: 10px;
+    }
+    .sample-values li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .sample-blur {
+      position: relative;
+      margin-top: 20px;
+    }
+    .sample-blur-content {
+      filter: blur(4px);
+      user-select: none;
+      pointer-events: none;
+    }
+    .sample-blur-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(transparent, rgba(245,245,245,0.85));
+    }
+    .sample-blur-cta {
+      display: inline-block;
+      background: var(--black);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 12px 24px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .sample-blur-cta:hover { background: var(--accent); }
+
     /* ─── BOTTOM CTA ─── */
     .cta-section {
       background: var(--black);
@@ -250,6 +499,13 @@
       margin-left: auto;
       margin-right: auto;
     }
+    .cta-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
     .btn-white {
       display: inline-block;
       font-size: 14px;
@@ -262,6 +518,20 @@
       transition: background 0.2s, transform 0.15s;
     }
     .btn-white:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+    .btn-outline-white {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      padding: 15px 36px;
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-outline-white:hover { border-color: var(--white); transform: translateY(-1px); }
 
     /* ─── FOOTER ─── */
     footer {
@@ -285,10 +555,14 @@
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
+      .nav-links { gap: 16px; }
+      .nav-link { display: none; }
       .hero { padding: 100px 24px 60px; }
       section { padding: 72px 24px; }
       footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
       .step:not(:last-child)::after { display: none; }
+      .sample-card { padding: 28px 24px; }
+      .cta-buttons { flex-direction: column; align-items: stretch; text-align: center; }
     }
   </style>
 </head>
@@ -297,7 +571,12 @@
   <!-- NAV -->
   <nav>
     <a class="logo" href="/">EverDNA</a>
-    <a class="nav-cta" href="#form">無料診断を試す</a>
+    <div class="nav-links">
+      <a class="nav-link" href="#features">特徴</a>
+      <a class="nav-link" href="#pricing">料金</a>
+      <a class="nav-link" href="#sample">サンプル</a>
+      <a class="nav-cta" href="#pricing">無料で試す</a>
+    </div>
   </nav>
 
   <!-- HERO -->
@@ -316,7 +595,8 @@
           ブランドDNAレポートをお届けします。
         </p>
         <div class="hero-actions">
-          <a class="btn-primary" href="#form">無料で診断する →</a>
+          <a class="btn-primary" href="#pricing">無料で診断する →</a>
+          <a class="btn-secondary" href="#sample">サンプルを見る</a>
           <span class="hero-note">登録不要・約2分で完了</span>
         </div>
       </div>
@@ -367,7 +647,7 @@
           </div>
           <h3 class="feature-title">レポートをメールで受信</h3>
           <p class="feature-desc">
-            診断結果はPDF形式のブランドDNAレポートとしてお送りします。
+            診断結果はブランドDNAレポートとしてメール送付。
             チームで共有してすぐに活用できます。
           </p>
         </div>
@@ -410,22 +690,143 @@
           </p>
         </div>
 
+        <div class="step">
+          <p class="step-number">Step 04 <span style="font-size:10px;color:var(--gray-400)">(有料プランのみ)</span></p>
+          <h3 class="step-title">フルレポートへ</h3>
+          <p class="step-desc">
+            無料サマリーに満足いただけたら、そのままフルレポートへアップグレード。
+            追加の入力は不要です。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SAMPLE REPORT -->
+  <section class="sample-section" id="sample">
+    <div class="section-inner">
+      <p class="section-label">Sample</p>
+      <h2 class="section-title">レポート<strong>サンプル</strong></h2>
+
+      <div class="sample-card">
+        <p class="sample-label">Brand DNA Report</p>
+        <p class="sample-company">株式会社〇〇（IT・SaaS / 従業員50名）— 無料サマリー</p>
+
+        <p class="sample-section-title">1. ブランドDNAサマリー</p>
+        <p class="sample-text">
+          「複雑さを、やさしさに変える」という信念のもと、中小企業が抱える業務の非効率を
+          AIでシンプルに解決することを存在意義としている。顧客との長期的な信頼関係を軸に、
+          誠実で親しみやすいブランドを体現している。
+        </p>
+
+        <p class="sample-section-title">2. コアバリュー</p>
+        <ul class="sample-values">
+          <li><strong>シンプリシティ</strong>：複雑な技術を誰でも使えるかたちに翻訳する</li>
+          <li><strong>誠実さ</strong>：誇張のない言葉で、正直に価値を届ける</li>
+          <li><strong>共創</strong>：顧客とともに課題を定義し、一緒に解決策をつくる</li>
+        </ul>
+
+        <!-- ぼかし：有料セクションのプレビュー -->
+        <div class="sample-blur">
+          <div class="sample-blur-content">
+            <p class="sample-section-title">3. ブランドパーソナリティ</p>
+            <p class="sample-text">
+              穏やかで頼りになる中堅エンジニア。専門用語を使わず噛み砕いて話すが、内容は本質を突いている。
+              威圧感がなく、初対面でも安心して相談できる雰囲気を持つ。ユーモアはさりげなく、
+              誠実さが滲み出る存在。
+            </p>
+            <p class="sample-section-title">4. コミュニケーションDNA</p>
+            <p class="sample-text">
+              トーン：親しみやすく、しかしプロフェッショナル。避けるべき表現：「革命的」「ゲームチェンジャー」
+              などの誇張表現。推奨表現：「一緒に」「わかりやすく」「現場から」。
+            </p>
+          </div>
+          <div class="sample-blur-overlay">
+            <a class="sample-blur-cta" href="#pricing">フルレポートで続きを見る →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="section-inner">
+      <p class="section-label">Pricing</p>
+      <h2 class="section-title">まず<strong>無料</strong>で体験する</h2>
+
+      <div class="pricing-grid">
+
+        <!-- 無料プラン -->
+        <div class="plan-card">
+          <p class="plan-badge">Free</p>
+          <p class="plan-price">¥<span class="plan-price-unit">0</span></p>
+          <p class="plan-price-note">登録不要・すぐに試せる</p>
+          <p class="plan-desc">
+            ブランドDNAのエッセンスを無料でお届け。
+            サマリーとコアバリューを確認できます。
+          </p>
+          <ul class="plan-features">
+            <li>ブランドDNAサマリー</li>
+            <li>コアバリュー（3項目）</li>
+            <li class="locked">ブランドパーソナリティ</li>
+            <li class="locked">コミュニケーションDNA</li>
+            <li class="locked">ブランドポジショニング</li>
+            <li class="locked">今後の活用アドバイス</li>
+          </ul>
+          <a class="btn-plan-free"
+             href="https://docs.google.com/forms/d/e/1FAIpQLSd8DyAXkzBR0JyyZIIR0tHzvl6KEbSLZx8OqdD5qxjTcEsfEw/viewform?usp=publish-editor"
+             target="_blank" rel="noopener">
+            無料で診断する →
+          </a>
+        </div>
+
+        <!-- 有料プラン -->
+        <div class="plan-card plan-paid">
+          <span class="plan-popular">おすすめ</span>
+          <p class="plan-badge">Full Report</p>
+          <p class="plan-price" style="color:#fff">¥<span class="plan-price-unit">50</span></p>
+          <p class="plan-price-note">¥50 / 診断1回</p>
+          <p class="plan-desc">
+            ブランドDNAを徹底的に言語化。
+            採用・広報・マーケに即活用できる
+            全6セクションのフルレポート。
+          </p>
+          <ul class="plan-features">
+            <li>ブランドDNAサマリー</li>
+            <li>コアバリュー（3〜5項目）</li>
+            <li>ブランドパーソナリティ</li>
+            <li>コミュニケーションDNA</li>
+            <li>ブランドポジショニング</li>
+            <li>今後の活用アドバイス</li>
+          </ul>
+          <a class="btn-plan-paid" href="https://buy.stripe.com/test_5kQbJ31mJcfxccWezQcfK00" target="_blank" rel="noopener">
+            フルレポートを取得する →
+          </a>
+        </div>
+
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section class="cta-section" id="form">
+  <section class="cta-section">
     <div class="section-inner">
       <p class="section-label">Get Started</p>
       <h2 class="cta-title">あなたの企業の<strong>DNAを</strong><br>知ってみませんか？</h2>
       <p class="cta-desc">
-        今なら無料。診断フォームに記入するだけで、
-        ブランドの本質を言語化したレポートをお届けします。
+        まずは無料診断から。サマリーレポートで
+        「自社らしさ」の輪郭を確認してください。
       </p>
-      <a class="btn-white" href="https://docs.google.com/forms/d/e/1FAIpQLSd8DyAXkzBR0JyyZIIR0tHzvl6KEbSLZx8OqdD5qxjTcEsfEw/viewform?usp=publish-editor" target="_blank" rel="noopener">
-        無料診断フォームへ →
-      </a>
+      <div class="cta-buttons">
+        <a class="btn-white"
+           href="https://docs.google.com/forms/d/e/1FAIpQLSd8DyAXkzBR0JyyZIIR0tHzvl6KEbSLZx8OqdD5qxjTcEsfEw/viewform?usp=publish-editor"
+           target="_blank" rel="noopener">
+          無料診断フォームへ →
+        </a>
+        <a class="btn-outline-white" href="#sample">サンプルを見る</a>
+      </div>
     </div>
   </section>
 
