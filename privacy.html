@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>プライバシーポリシー — EverDNA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #111111;
+      --gray-600: #666666;
+      --gray-400: #aaaaaa;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --accent: #2a5cff;
+    }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--black);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-back {
+      font-size: 13px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--black); }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 72px 48px 120px;
+    }
+    .page-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+    h1 strong { font-weight: 700; }
+    .updated {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-bottom: 56px;
+    }
+
+    .policy-intro {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.9;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .policy-section { margin-bottom: 40px; }
+    .policy-section h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .policy-section p,
+    .policy-section ul {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.9;
+    }
+    .policy-section ul {
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+    .policy-section ul li { margin-bottom: 6px; }
+    .policy-section a { color: var(--accent); }
+
+    footer {
+      padding: 32px 48px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      main { padding: 48px 24px 80px; }
+      footer { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="/">EverDNA</a>
+    <a class="nav-back" href="/">← トップページへ戻る</a>
+  </nav>
+
+  <main>
+    <p class="page-label">Legal</p>
+    <h1><strong>プライバシーポリシー</strong></h1>
+    <p class="updated">制定日：2026年6月20日</p>
+
+    <p class="policy-intro">
+      合同会社クボット（以下「当社」）は、EverDNA（以下「本サービス」）の提供にあたり、
+      利用者の個人情報の取り扱いについて以下のとおり定めます。
+      本サービスをご利用いただく場合は、本ポリシーに同意いただいたものとみなします。
+    </p>
+
+    <div class="policy-section">
+      <h2>1. 取得する情報</h2>
+      <p>本サービスでは、以下の情報を取得します。</p>
+      <ul>
+        <li>企業名・WebサイトURL・業種・従業員規模</li>
+        <li>担当者名・メールアドレス</li>
+        <li>入力いただいた強み・ブランドキーワード</li>
+        <li>アクセスログ（IPアドレス・ブラウザ情報等）</li>
+      </ul>
+    </div>
+
+    <div class="policy-section">
+      <h2>2. 利用目的</h2>
+      <ul>
+        <li>ブランドDNA診断レポートの生成・メール送付</li>
+        <li>有料プランの決済処理（Stripe, Inc. を利用）</li>
+        <li>サービス改善・統計分析（個人を特定しない形式）</li>
+        <li>お問い合わせへの対応</li>
+      </ul>
+    </div>
+
+    <div class="policy-section">
+      <h2>3. 第三者提供</h2>
+      <p>
+        当社は、法令に基づく場合を除き、お客様の同意なく個人情報を第三者に提供しません。
+        なお、本サービスでは以下のサービスを利用しており、各社のプライバシーポリシーが適用されます。
+      </p>
+      <ul>
+        <li>Anthropic, Inc.（Claude API / 診断エンジン）</li>
+        <li>Stripe, Inc.（決済処理）</li>
+        <li>Google LLC（Google Analytics / アクセス解析）</li>
+        <li>Vercel, Inc.（ウェブホスティング）</li>
+      </ul>
+    </div>
+
+    <div class="policy-section">
+      <h2>4. 保管期間</h2>
+      <p>
+        取得した個人情報は、診断申し込み日から1年間保管します。
+        保管期間経過後は速やかに削除します。
+        有料プランの決済情報については、法令の定める期間保管します。
+      </p>
+    </div>
+
+    <div class="policy-section">
+      <h2>5. 安全管理措置</h2>
+      <p>
+        当社は、個人情報の漏洩・滅失・毀損を防ぐため、適切なセキュリティ措置を講じます。
+        クレジットカード情報は当社サーバーに保存せず、Stripe, Inc. が安全に処理します。
+      </p>
+    </div>
+
+    <div class="policy-section">
+      <h2>6. 開示・訂正・削除のご請求</h2>
+      <p>
+        個人情報の開示・訂正・削除・利用停止をご希望の場合は、
+        下記お問い合わせ先までご連絡ください。本人確認のうえ、合理的な期間内に対応します。
+      </p>
+    </div>
+
+    <div class="policy-section">
+      <h2>7. Cookie・アクセス解析</h2>
+      <p>
+        本サービスでは、サービス改善のためGoogle Analyticsを利用しています。
+        Cookieを通じて収集されるデータは匿名化されており、個人を特定するものではありません。
+        ブラウザの設定からCookieを無効化することができます。
+      </p>
+    </div>
+
+    <div class="policy-section">
+      <h2>8. ポリシーの変更</h2>
+      <p>
+        本ポリシーは、法令の変更やサービス内容の変更に応じて改定することがあります。
+        重要な変更がある場合は、本ページにて告知します。
+      </p>
+    </div>
+
+    <div class="policy-section">
+      <h2>9. お問い合わせ</h2>
+      <p>
+        個人情報の取り扱いに関するお問い合わせは、以下までご連絡ください。<br>
+        合同会社クボット（EverDNA 運営）<br>
+        メール：<a href="mailto:info@everdna.com">info@everdna.com</a>
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    © 2026 EverDNA / 合同会社クボット All rights reserved.
+  </footer>
+
+</body>
+</html>

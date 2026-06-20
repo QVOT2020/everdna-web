@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EverDNA — ブランドの本質を言語化する</title>
+
+  <!-- ▼ GA4 計測タグ：G-XXXXXXXXXX を実際の測定IDに差し替えてください -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script> -->
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,6 +26,8 @@
       --white: #ffffff;
       --accent: #2a5cff;
       --accent-light: #e8eeff;
+      --error: #e53e3e;
+      --success: #38a169;
     }
 
     html { scroll-behavior: smooth; }
@@ -297,7 +309,6 @@
     .plan-card.plan-paid .plan-price { color: var(--white); }
 
     .plan-price-unit {
-      font-size: 16px;
       font-weight: 400;
     }
 
@@ -361,6 +372,8 @@
       padding: 14px 0;
       text-decoration: none;
       transition: background 0.2s;
+      cursor: pointer;
+      border: none;
     }
     .btn-plan-free:hover { background: var(--accent); }
 
@@ -376,6 +389,8 @@
       padding: 14px 0;
       text-decoration: none;
       transition: background 0.2s;
+      cursor: pointer;
+      border: none;
     }
     .btn-plan-paid:hover { background: var(--accent-light); }
 
@@ -478,6 +493,254 @@
     }
     .sample-blur-cta:hover { background: var(--accent); }
 
+    /* ─── DIAGNOSIS FORM ─── */
+    .form-section { background: var(--white); padding-top: 80px; }
+
+    .form-wrapper {
+      max-width: 720px;
+    }
+
+    /* Plan toggle */
+    .plan-toggle {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 48px;
+    }
+    .plan-toggle-btn {
+      flex: 1;
+      padding: 16px 24px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-align: center;
+      transition: all 0.18s;
+      line-height: 1.4;
+    }
+    .plan-toggle-btn.active {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+    .plan-toggle-btn small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+    .plan-toggle-btn.active small { opacity: 0.6; }
+
+    /* Form grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 24px;
+    }
+    .form-grid .form-field-full { grid-column: 1 / -1; }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      letter-spacing: 0.3px;
+    }
+    .form-field label .required {
+      color: var(--accent);
+      margin-left: 3px;
+    }
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--black);
+      background: var(--white);
+      border: 1.5px solid rgba(0,0,0,0.14);
+      border-radius: 0;
+      outline: none;
+      transition: border-color 0.18s;
+      appearance: none;
+    }
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-field input.error,
+    .form-field select.error,
+    .form-field textarea.error {
+      border-color: var(--error);
+    }
+    .form-field textarea { resize: vertical; min-height: 90px; }
+    .form-field .field-error {
+      font-size: 11px;
+      color: var(--error);
+      display: none;
+    }
+    .form-field input.error + .field-error,
+    .form-field select.error + .field-error,
+    .form-field textarea.error + .field-error {
+      display: block;
+    }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--gray-400);
+      pointer-events: none;
+    }
+    .select-wrap select { padding-right: 36px; }
+
+    /* Keywords row */
+    .keywords-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .keywords-row input { font-size: 13px; }
+
+    /* Privacy consent */
+    .consent-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .consent-wrap input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .consent-wrap label {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      cursor: pointer;
+    }
+    .consent-wrap label a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* Submit */
+    .form-submit-area { margin-top: 32px; }
+
+    .btn-submit {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 18px 0;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      font-family: inherit;
+    }
+    .btn-submit:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .form-note {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 12px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Loading state */
+    .form-loading {
+      display: none;
+      text-align: center;
+      padding: 60px 0;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--gray-100);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 15px;
+      color: var(--gray-600);
+    }
+    .loading-sub {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 6px;
+    }
+
+    /* Success state */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 60px 0;
+    }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .success-icon svg { width: 24px; height: 24px; color: var(--success); }
+    .success-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .success-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .success-note {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 12px;
+    }
+
+    /* Error banner */
+    .form-error-banner {
+      display: none;
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--error);
+      margin-bottom: 20px;
+    }
+
     /* ─── BOTTOM CTA ─── */
     .cta-section {
       background: var(--black);
@@ -535,19 +798,44 @@
 
     /* ─── FOOTER ─── */
     footer {
-      padding: 32px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 40px 48px;
       border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .footer-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
     }
     .footer-logo {
       font-size: 11px;
       letter-spacing: 4px;
       text-transform: uppercase;
       color: var(--gray-400);
+      display: block;
+      margin-bottom: 8px;
     }
-    .footer-copy {
+    .footer-company {
+      font-size: 12px;
+      color: var(--gray-400);
+      line-height: 1.8;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .footer-link {
+      font-size: 12px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--black); }
+    .footer-bottom {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding-top: 20px;
       font-size: 12px;
       color: var(--gray-400);
     }
@@ -559,10 +847,17 @@
       .nav-link { display: none; }
       .hero { padding: 100px 24px 60px; }
       section { padding: 72px 24px; }
-      footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+      .form-section { padding: 60px 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .form-field-full { grid-column: auto; }
+      .keywords-row { grid-template-columns: 1fr; }
+      .plan-toggle { flex-direction: column; }
       .step:not(:last-child)::after { display: none; }
       .sample-card { padding: 28px 24px; }
       .cta-buttons { flex-direction: column; align-items: stretch; text-align: center; }
+      .footer-main { flex-direction: column; gap: 20px; }
+      .footer-links { flex-wrap: wrap; gap: 16px; }
+      footer { padding: 32px 24px; }
     }
   </style>
 </head>
@@ -575,7 +870,7 @@
       <a class="nav-link" href="#features">特徴</a>
       <a class="nav-link" href="#pricing">料金</a>
       <a class="nav-link" href="#sample">サンプル</a>
-      <a class="nav-cta" href="#pricing">無料で試す</a>
+      <a class="nav-cta" href="#form">無料で試す</a>
     </div>
   </nav>
 
@@ -595,7 +890,7 @@
           ブランドDNAレポートをお届けします。
         </p>
         <div class="hero-actions">
-          <a class="btn-primary" href="#pricing">無料で診断する →</a>
+          <a class="btn-primary" href="#form">無料で診断する →</a>
           <a class="btn-secondary" href="#sample">サンプルを見る</a>
           <span class="hero-note">登録不要・約2分で完了</span>
         </div>
@@ -665,10 +960,10 @@
 
         <div class="step">
           <p class="step-number">Step 01</p>
-          <h3 class="step-title">情報を入力</h3>
+          <h3 class="step-title">フォームに入力</h3>
           <p class="step-desc">
-            企業名・URL・業種・メールアドレスを入力フォームに記入します。
-            特別なアカウント登録は不要です。
+            このページのフォームに企業名・URL・業種・メールアドレスを入力します。
+            アカウント登録は不要です。
           </p>
         </div>
 
@@ -743,7 +1038,7 @@
             </p>
           </div>
           <div class="sample-blur-overlay">
-            <a class="sample-blur-cta" href="#pricing">フルレポートで続きを見る →</a>
+            <a class="sample-blur-cta" href="#form">フルレポートで続きを見る →</a>
           </div>
         </div>
       </div>
@@ -775,9 +1070,7 @@
             <li class="locked">ブランドポジショニング</li>
             <li class="locked">今後の活用アドバイス</li>
           </ul>
-          <a class="btn-plan-free"
-             href="https://docs.google.com/forms/d/e/1FAIpQLSd8DyAXkzBR0JyyZIIR0tHzvl6KEbSLZx8OqdD5qxjTcEsfEw/viewform?usp=publish-editor"
-             target="_blank" rel="noopener">
+          <a class="btn-plan-free" href="#form" onclick="selectPlan('free')">
             無料で診断する →
           </a>
         </div>
@@ -786,8 +1079,8 @@
         <div class="plan-card plan-paid">
           <span class="plan-popular">おすすめ</span>
           <p class="plan-badge">Full Report</p>
-          <p class="plan-price" style="color:#fff">¥<span class="plan-price-unit">50</span></p>
-          <p class="plan-price-note">¥50 / 診断1回</p>
+          <p class="plan-price" style="color:#fff">¥<span class="plan-price-unit">1,980</span></p>
+          <p class="plan-price-note">¥1,980 / 診断1回（税込）</p>
           <p class="plan-desc">
             ブランドDNAを徹底的に言語化。
             採用・広報・マーケに即活用できる
@@ -801,9 +1094,163 @@
             <li>ブランドポジショニング</li>
             <li>今後の活用アドバイス</li>
           </ul>
-          <a class="btn-plan-paid" href="https://buy.stripe.com/test_5kQbJ31mJcfxccWezQcfK00" target="_blank" rel="noopener">
+          <a class="btn-plan-paid" href="#form" onclick="selectPlan('paid')">
             フルレポートを取得する →
           </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DIAGNOSIS FORM -->
+  <section class="form-section" id="form">
+    <div class="section-inner">
+      <p class="section-label">Diagnosis</p>
+      <h2 class="section-title">ブランドDNA診断を<strong>申し込む</strong></h2>
+
+      <div class="form-wrapper">
+
+        <!-- Plan selector -->
+        <div class="plan-toggle" role="group" aria-label="プラン選択">
+          <button type="button" class="plan-toggle-btn active" id="toggle-free" onclick="selectPlan('free')">
+            無料サマリー
+            <small>¥0・サマリー＋コアバリュー</small>
+          </button>
+          <button type="button" class="plan-toggle-btn" id="toggle-paid" onclick="selectPlan('paid')">
+            フルレポート
+            <small>¥1,980（税込）・全6セクション</small>
+          </button>
+        </div>
+
+        <!-- Error banner -->
+        <div class="form-error-banner" id="form-error-banner">
+          送信エラーが発生しました。しばらく時間をおいて再度お試しください。
+        </div>
+
+        <!-- Form body -->
+        <div id="form-body">
+          <form id="diagnosis-form" novalidate>
+            <div class="form-grid">
+
+              <div class="form-field">
+                <label for="company">企業名<span class="required">*</span></label>
+                <input type="text" id="company" name="company" placeholder="株式会社〇〇" required />
+                <span class="field-error">入力してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="url">企業WebサイトURL<span class="required">*</span></label>
+                <input type="url" id="url" name="url" placeholder="https://example.com" required />
+                <span class="field-error">URLを入力してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="industry">業種<span class="required">*</span></label>
+                <div class="select-wrap">
+                  <select id="industry" name="industry" required>
+                    <option value="">選択してください</option>
+                    <option>IT・SaaS</option>
+                    <option>製造業</option>
+                    <option>小売・EC</option>
+                    <option>金融・保険</option>
+                    <option>不動産</option>
+                    <option>医療・ヘルスケア</option>
+                    <option>教育</option>
+                    <option>コンサルティング</option>
+                    <option>メディア・広告</option>
+                    <option>飲食・サービス</option>
+                    <option>その他</option>
+                  </select>
+                </div>
+                <span class="field-error">選択してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="size">従業員規模<span class="required">*</span></label>
+                <div class="select-wrap">
+                  <select id="size" name="size" required>
+                    <option value="">選択してください</option>
+                    <option>1〜10名</option>
+                    <option>11〜50名</option>
+                    <option>51〜200名</option>
+                    <option>201〜500名</option>
+                    <option>501名以上</option>
+                  </select>
+                </div>
+                <span class="field-error">選択してください</span>
+              </div>
+
+              <div class="form-field form-field-full">
+                <label for="strengths">強み・他社との違い<span class="required">*</span></label>
+                <textarea id="strengths" name="strengths" placeholder="例：業界20年の専門知識と、スタートアップのようなスピード感を兼ね備えています。" required></textarea>
+                <span class="field-error">入力してください</span>
+              </div>
+
+              <div class="form-field form-field-full">
+                <label>ブランドキーワード（最大3つ）</label>
+                <div class="keywords-row">
+                  <input type="text" name="keyword1" placeholder="例：誠実" />
+                  <input type="text" name="keyword2" placeholder="例：革新" />
+                  <input type="text" name="keyword3" placeholder="例：共創" />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="contact-name">担当者名<span class="required">*</span></label>
+                <input type="text" id="contact-name" name="contactName" placeholder="山田 太郎" required />
+                <span class="field-error">入力してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="email">メールアドレス<span class="required">*</span></label>
+                <input type="email" id="email" name="email" placeholder="taro@example.com" required />
+                <span class="field-error">正しいメールアドレスを入力してください</span>
+              </div>
+
+              <div class="form-field form-field-full">
+                <div class="consent-wrap">
+                  <input type="checkbox" id="consent" name="consent" required />
+                  <label for="consent">
+                    <a href="/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意します。
+                    入力いただいたメールアドレスに診断レポートをお送りします。
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-submit-area">
+              <button type="submit" class="btn-submit" id="submit-btn">
+                無料で診断する →
+              </button>
+              <p class="form-note" id="form-note">
+                登録不要。メールのみで診断レポートをお届けします。
+              </p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Loading state -->
+        <div class="form-loading" id="form-loading">
+          <div class="spinner"></div>
+          <p class="loading-text">AIが分析しています...</p>
+          <p class="loading-sub">そのままお待ちください（通常1〜3分）</p>
+        </div>
+
+        <!-- Success state -->
+        <div class="form-success" id="form-success">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h3 class="success-title">診断申し込みを受け付けました</h3>
+          <p class="success-desc">
+            まもなくブランドDNAレポートをメールにてお送りします。<br>
+            メールが届かない場合は、迷惑メールフォルダもご確認ください。
+          </p>
+          <p class="success-note">送信先：<span id="success-email"></span></p>
         </div>
 
       </div>
@@ -820,11 +1267,7 @@
         「自社らしさ」の輪郭を確認してください。
       </p>
       <div class="cta-buttons">
-        <a class="btn-white"
-           href="https://docs.google.com/forms/d/e/1FAIpQLSd8DyAXkzBR0JyyZIIR0tHzvl6KEbSLZx8OqdD5qxjTcEsfEw/viewform?usp=publish-editor"
-           target="_blank" rel="noopener">
-          無料診断フォームへ →
-        </a>
+        <a class="btn-white" href="#form">無料診断フォームへ →</a>
         <a class="btn-outline-white" href="#sample">サンプルを見る</a>
       </div>
     </div>
@@ -832,9 +1275,143 @@
 
   <!-- FOOTER -->
   <footer>
-    <span class="footer-logo">EverDNA</span>
-    <span class="footer-copy">© 2026 EverDNA. All rights reserved.</span>
+    <div class="footer-main">
+      <div>
+        <span class="footer-logo">EverDNA</span>
+        <p class="footer-company">
+          運営：合同会社クボット<br>
+          お問い合わせ：<a href="mailto:info@everdna.com" style="color:var(--gray-400);text-decoration:none;">info@everdna.com</a>
+        </p>
+      </div>
+      <div class="footer-links">
+        <a class="footer-link" href="/privacy.html">プライバシーポリシー</a>
+        <a class="footer-link" href="/tokutei.html">特定商取引法に基づく表示</a>
+        <a class="footer-link" href="mailto:info@everdna.com">お問い合わせ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 EverDNA / 合同会社クボット All rights reserved.
+    </div>
   </footer>
+
+  <script>
+    // ─── 設定 ──────────────────────────────────────────────────────────────────
+    // ▼ GASウェブアプリのURLに差し替えてください
+    const GAS_ENDPOINT = 'YOUR_GAS_WEBAPP_URL_HERE';
+
+    // ▼ 本番StripeのPayment LinkURLに差し替えてください（現在はテスト用）
+    const STRIPE_URL = 'https://buy.stripe.com/test_5kQbJ31mJcfxccWezQcfK00';
+    // ────────────────────────────────────────────────────────────────────────────
+
+    let currentPlan = 'free';
+
+    function selectPlan(plan) {
+      currentPlan = plan;
+      document.getElementById('toggle-free').classList.toggle('active', plan === 'free');
+      document.getElementById('toggle-paid').classList.toggle('active', plan === 'paid');
+
+      const btn = document.getElementById('submit-btn');
+      const note = document.getElementById('form-note');
+      if (plan === 'paid') {
+        btn.textContent = 'フルレポートを取得する（¥1,980）→';
+        note.textContent = '決済画面（Stripe）へ移動します。支払い完了後、自動でレポートをお送りします。';
+      } else {
+        btn.textContent = '無料で診断する →';
+        note.textContent = '登録不要。メールのみで診断レポートをお届けします。';
+      }
+    }
+
+    function validateForm() {
+      let valid = true;
+      const fields = ['company', 'url', 'industry', 'size', 'strengths', 'contact-name', 'email'];
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const isEmpty = !el.value.trim();
+        const isEmailInvalid = el.type === 'email' && el.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+        if (isEmpty || isEmailInvalid) {
+          el.classList.add('error');
+          valid = false;
+        } else {
+          el.classList.remove('error');
+        }
+      });
+      const consent = document.getElementById('consent');
+      if (!consent.checked) {
+        consent.style.outline = '2px solid var(--error)';
+        valid = false;
+      } else {
+        consent.style.outline = '';
+      }
+      return valid;
+    }
+
+    function getFormData() {
+      const f = document.getElementById('diagnosis-form');
+      return {
+        company:     f.company.value.trim(),
+        url:         f.url.value.trim(),
+        industry:    f.industry.value,
+        size:        f.size.value,
+        strengths:   f.strengths.value.trim(),
+        keyword1:    f.keyword1.value.trim(),
+        keyword2:    f.keyword2.value.trim(),
+        keyword3:    f.keyword3.value.trim(),
+        contactName: f.contactName.value.trim(),
+        email:       f.email.value.trim(),
+        plan:        currentPlan,
+      };
+    }
+
+    function showLoading() {
+      document.getElementById('form-body').style.display = 'none';
+      document.getElementById('form-loading').style.display = 'block';
+      document.getElementById('form-error-banner').style.display = 'none';
+    }
+
+    function showSuccess(email) {
+      document.getElementById('form-loading').style.display = 'none';
+      document.getElementById('form-success').style.display = 'block';
+      document.getElementById('success-email').textContent = email;
+    }
+
+    function showFormError() {
+      document.getElementById('form-loading').style.display = 'none';
+      document.getElementById('form-body').style.display = 'block';
+      document.getElementById('form-error-banner').style.display = 'block';
+    }
+
+    document.getElementById('diagnosis-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!validateForm()) return;
+
+      const data = getFormData();
+
+      if (currentPlan === 'paid') {
+        // 有料プラン: Stripeへ遷移（prefilled_emailで入力済みメールを渡す）
+        const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email);
+        // TODO: GASにリード情報を事前送信する場合はここで fetch(GAS_ENDPOINT, ...) を呼ぶ
+        window.open(stripeUrl, '_blank');
+        return;
+      }
+
+      // 無料プラン: GASに送信
+      showLoading();
+
+      try {
+        const resp = await fetch(GAS_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        showSuccess(data.email);
+      } catch (err) {
+        console.error(err);
+        showFormError();
+      }
+    });
+  </script>
 
 </body>
 </html>
