@@ -556,7 +556,7 @@
       color: var(--accent);
       margin-left: 3px;
     }
-    .form-field input,
+    .form-field input:not([type="checkbox"]),
     .form-field select,
     .form-field textarea {
       width: 100%;
@@ -571,12 +571,12 @@
       transition: border-color 0.18s;
       appearance: none;
     }
-    .form-field input:focus,
+    .form-field input:not([type="checkbox"]):focus,
     .form-field select:focus,
     .form-field textarea:focus {
       border-color: var(--accent);
     }
-    .form-field input.error,
+    .form-field input:not([type="checkbox"]).error,
     .form-field select.error,
     .form-field textarea.error {
       border-color: var(--error);
