@@ -1297,7 +1297,7 @@
   <script>
     // ─── 設定 ──────────────────────────────────────────────────────────────────
     // ▼ GASウェブアプリのURLに差し替えてください
-    const GAS_ENDPOINT = 'YOUR_GAS_WEBAPP_URL_HERE';
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxJdtQr2eGkxPnAPdzVUmW_EnvjPM_mEdgTdb6Dr0gBitRmf02i7dI9MiRWjJjjNb1WmA/exec';
 
     // ▼ 本番StripeのPayment LinkURLに差し替えてください（現在はテスト用）
     const STRIPE_URL = 'https://buy.stripe.com/test_5kQbJ31mJcfxccWezQcfK00';
@@ -1396,15 +1396,18 @@
       }
 
       // 無料プラン: GASに送信
+      // Content-Type: text/plain にすることでCORSプリフライトを回避（GAS制約）
       showLoading();
 
       try {
         const resp = await fetch(GAS_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(data),
+          redirect: 'follow',
         });
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        // GASは200・302どちらも正常応答とみなす
+        if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
         showSuccess(data.email);
       } catch (err) {
         console.error(err);
