@@ -123,7 +123,7 @@
   <main>
     <p class="page-label">Legal</p>
     <h1><strong>プライバシーポリシー</strong></h1>
-    <p class="updated">制定日：2026年6月20日</p>
+    <p class="updated">制定日：2026年6月20日 ／ 最終改定日：2026年7月4日</p>
 
     <p class="policy-intro">
       合同会社クボット（以下「当社」）は、EverDNA（以下「本サービス」）の提供にあたり、
@@ -145,7 +145,7 @@
     <div class="policy-section">
       <h2>2. 利用目的</h2>
       <ul>
-        <li>ブランドDNA診断レポートの生成・メール送付</li>
+        <li>ブランドDNA診断レポートの生成・メール送付（入力情報は、レポート生成のためAnthropic, Inc.のAI API（Claude）に送信されます）</li>
         <li>有料プランの決済処理（Stripe, Inc. を利用）</li>
         <li>サービス改善・統計分析（個人を特定しない形式）</li>
         <li>お問い合わせへの対応</li>
@@ -153,15 +153,16 @@
     </div>
 
     <div class="policy-section">
-      <h2>3. 第三者提供</h2>
+      <h2>3. 第三者提供・委託</h2>
       <p>
         当社は、法令に基づく場合を除き、お客様の同意なく個人情報を第三者に提供しません。
-        なお、本サービスでは以下のサービスを利用しており、各社のプライバシーポリシーが適用されます。
+        なお、本サービスの提供にあたり、業務遂行に必要な範囲で、米国に所在する以下の事業者に
+        個人情報の取り扱いを委託しています。各社のプライバシーポリシーが適用されます。
       </p>
       <ul>
-        <li>Anthropic, Inc.（Claude API / 診断エンジン）</li>
+        <li>Anthropic, Inc.（Claude API / 診断レポート生成）— API経由で送信された入力情報は、同社のAIモデルの学習には使用されません</li>
+        <li>Google LLC（Google Apps Script・メール送信基盤 / Google Analyticsによるアクセス解析）</li>
         <li>Stripe, Inc.（決済処理）</li>
-        <li>Google LLC（Google Analytics / アクセス解析）</li>
         <li>Vercel, Inc.（ウェブホスティング）</li>
       </ul>
     </div>
@@ -192,11 +193,19 @@
     </div>
 
     <div class="policy-section">
-      <h2>7. Cookie・アクセス解析</h2>
+      <h2>7. Cookie・アクセス解析・ローカルストレージ</h2>
       <p>
-        本サービスでは、サービス改善のためGoogle Analyticsを利用しています。
-        Cookieを通じて収集されるデータは匿名化されており、個人を特定するものではありません。
-        ブラウザの設定からCookieを無効化することができます。
+        本サービスでは、サービス改善のためGoogle Analytics（Google LLC）を利用しています。
+        Google Analyticsは、Cookie等を通じて閲覧ページ・ブラウザ情報などの利用状況データを収集し、
+        Google LLC（米国）に送信します。収集されるデータの取り扱いは
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleのプライバシーポリシー</a>に従います。
+        計測を望まない場合は、ブラウザの設定からCookieを無効化するか、
+        <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analyticsオプトアウトアドオン</a>を利用できます。
+      </p>
+      <p style="margin-top:12px">
+        また、有料プランのお申し込み時には、決済完了後の処理のためにお申し込み内容を
+        お使いのブラウザ内（ローカルストレージ）に一時的に保存します。
+        このデータは決済完了ページでの送信処理が完了した時点で削除されます。
       </p>
     </div>
 
