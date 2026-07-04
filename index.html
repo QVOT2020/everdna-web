@@ -1388,10 +1388,19 @@
       const data = getFormData();
 
       if (currentPlan === 'paid') {
-        // 有料プラン: Stripeへ遷移（prefilled_emailで入力済みメールを渡す）
+        // 有料プラン: 申込データをlocalStorageに保存し、同タブでStripeへ遷移。
+        // 決済完了後、Stripe側のリダイレクト設定で /thanks.html に戻り、
+        // thanks.html が保存データをGASへ送信してレポート生成を開始する。
+        try {
+          localStorage.setItem('everdna_pending_order', JSON.stringify({
+            data: data,
+            savedAt: Date.now(),
+          }));
+        } catch (err) {
+          console.error('localStorage error:', err);
+        }
         const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email);
-        // TODO: GASにリード情報を事前送信する場合はここで fetch(GAS_ENDPOINT, ...) を呼ぶ
-        window.open(stripeUrl, '_blank');
+        window.location.href = stripeUrl;
         return;
       }
 
