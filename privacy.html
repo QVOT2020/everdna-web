@@ -100,16 +100,53 @@
     .policy-section a { color: var(--accent); }
 
     footer {
-      padding: 32px 48px;
+      padding: 40px 48px;
       border-top: 1px solid rgba(0,0,0,0.08);
-      text-align: center;
+    }
+    .footer-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .footer-logo {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .footer-company {
+      font-size: 12px;
+      color: var(--gray-400);
+      line-height: 1.8;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .footer-link {
+      font-size: 12px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--black); }
+    .footer-bottom {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding-top: 20px;
       font-size: 12px;
       color: var(--gray-400);
     }
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       main { padding: 48px 24px 80px; }
-      footer { padding: 24px; }
+      .footer-main { flex-direction: column; gap: 20px; }
+      .footer-links { flex-wrap: wrap; gap: 16px; }
+      footer { padding: 32px 24px; }
     }
   </style>
 </head>
@@ -228,7 +265,23 @@
   </main>
 
   <footer>
-    © 2026 EverDNA / 合同会社クボット All rights reserved.
+    <div class="footer-main">
+      <div>
+        <span class="footer-logo">EverDNA</span>
+        <p class="footer-company">
+          運営：合同会社クボット<br>
+          お問い合わせ：<a href="mailto:info@everdna.com" style="color:var(--gray-400);text-decoration:none;">info@everdna.com</a>
+        </p>
+      </div>
+      <div class="footer-links">
+        <a class="footer-link" href="/privacy.html">プライバシーポリシー</a>
+        <a class="footer-link" href="/tokutei.html">特定商取引法に基づく表示</a>
+        <a class="footer-link" href="mailto:info@everdna.com">お問い合わせ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 EverDNA / 合同会社クボット All rights reserved.
+    </div>
   </footer>
 
 </body>
