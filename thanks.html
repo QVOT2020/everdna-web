@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
+  <meta name="description" content="EverDNA ブランドDNA診断 決済完了ページ" />
+  <meta name="theme-color" content="#ffffff" />
   <title>決済完了 — EverDNA</title>
 
   <!-- GA4 計測タグ -->
@@ -84,6 +86,10 @@
       margin: 0 auto 24px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .spinner { animation-duration: 1.8s; }
+      .btn-home, .btn-retry { transition: none; }
+    }
 
     .status-icon {
       width: 56px;
@@ -213,16 +219,20 @@
   </nav>
 
   <main>
-    <div class="card">
+    <div class="card" role="status" aria-live="polite">
 
       <!-- 送信中 -->
       <div class="state active" id="state-loading">
-        <div class="spinner"></div>
+        <div class="spinner" aria-hidden="true"></div>
         <p class="page-label">Payment Completed</p>
         <h1>決済が<strong>完了</strong>しました</h1>
         <p class="desc">
           お申し込み内容を送信しています。<br>
           このままページを閉じずにお待ちください。
+        </p>
+        <p class="note" id="loading-slow-note" style="display:none;">
+          通信状況によっては少し時間がかかることがあります。<br>
+          ページを閉じずにそのままお待ちください。
         </p>
       </div>
 
@@ -287,7 +297,10 @@
           解決しない場合は <a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
           レポートを手動でお送りします。
         </p>
-        <button type="button" class="btn-retry" onclick="submitOrder()">再送信する</button>
+        <button type="button" class="btn-retry" id="btn-retry" onclick="submitOrder()">再送信する</button>
+        <p class="note" style="margin-top:20px;">
+          <a href="/">トップページへ戻る</a>
+        </p>
       </div>
 
     </div>
@@ -320,9 +333,21 @@
     const STORAGE_KEY = 'everdna_pending_order';
     const MAX_AGE_MS  = 2 * 60 * 60 * 1000; // 2時間で申込データを無効化
 
+    let isSubmitting = false;
+    let slowTimer = null;
+
+    function warnUnload(e) { e.preventDefault(); e.returnValue = ''; }
+    function setInflight(on) {
+      if (on) window.addEventListener('beforeunload', warnUnload);
+      else window.removeEventListener('beforeunload', warnUnload);
+    }
+
     function showState(id) {
       document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
+      // 状態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
+      const h = document.querySelector('#' + id + ' h1');
+      if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     }
 
     function loadPendingOrder() {
@@ -342,13 +367,26 @@
     }
 
     async function submitOrder() {
+      if (isSubmitting) return; // 二重送信・連打防止
       const data = loadPendingOrder();
       if (!data) {
         showState('state-generic');
         return;
       }
       data.plan = 'paid'; // 決済完了ページ経由は必ず有料扱い
+      isSubmitting = true;
+      setInflight(true); // 送信中はページ離脱を警告
       showState('state-loading');
+
+      // doPostは申込をキューに記録して即返す（レポート生成は別トリガー）。
+      // 通常1〜2秒で完了。10秒以上かかったら追加の案内を表示
+      const slowNote = document.getElementById('loading-slow-note');
+      if (slowNote) slowNote.style.display = 'none';
+      slowTimer = setTimeout(() => { if (slowNote) slowNote.style.display = 'block'; }, 10000);
+
+      // 30秒でタイムアウト（無限スピナー防止）
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
 
       try {
         // Content-Type: text/plain でCORSプリフライトを回避（GAS制約）
@@ -357,8 +395,23 @@
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(data),
           redirect: 'follow',
+          signal: controller.signal,
         });
         if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
+
+        // GASは検証エラーでもHTTP 200を返すため、本文のsuccessを確認する
+        // （レスポンスが読めない/空の場合は200到達をもって成功とみなす）
+        try {
+          const body = await resp.text();
+          if (body) {
+            const json = JSON.parse(body);
+            if (json && json.success === false) {
+              throw new Error(json.error || '受付に失敗しました');
+            }
+          }
+        } catch (parseErr) {
+          if (parseErr instanceof SyntaxError === false) throw parseErr;
+        }
 
         // 二重送信防止：成功したら申込データを削除
         localStorage.removeItem(STORAGE_KEY);
@@ -368,6 +421,11 @@
       } catch (err) {
         console.error(err);
         showState('state-error');
+      } finally {
+        clearTimeout(timeout);
+        clearTimeout(slowTimer);
+        isSubmitting = false;
+        setInflight(false);
       }
     }
 
