@@ -384,9 +384,9 @@
       if (slowNote) slowNote.style.display = 'none';
       slowTimer = setTimeout(() => { if (slowNote) slowNote.style.display = 'block'; }, 10000);
 
-      // 30秒でタイムアウト（無限スピナー防止）
+      // 75秒でタイムアウト（無限スピナー防止。同期版GASが残る移行期でも誤爆しない余裕）
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
+      const timeout = setTimeout(() => controller.abort(), 75000);
 
       try {
         // Content-Type: text/plain でCORSプリフライトを回避（GAS制約）
@@ -399,19 +399,23 @@
         });
         if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
 
-        // GASは検証エラーでもHTTP 200を返すため、本文のsuccessを確認する
-        // （レスポンスが読めない/空の場合は200到達をもって成功とみなす）
+        // GASは検証エラーでもHTTP 200を返すため、本文のsuccessを確認する。
+        // ただしGASは302リダイレクトを挟むため、クロスオリジンで本文を読めない
+        // ことがある（resp.text()がTypeErrorを投げる）。その場合は「GASに到達＝
+        // 受付成功」とみなし、明示的な success:false のときのみ失敗として扱う。
+        let explicitError = null;
         try {
           const body = await resp.text();
           if (body) {
             const json = JSON.parse(body);
             if (json && json.success === false) {
-              throw new Error(json.error || '受付に失敗しました');
+              explicitError = json.error || '受付に失敗しました';
             }
           }
-        } catch (parseErr) {
-          if (parseErr instanceof SyntaxError === false) throw parseErr;
+        } catch (_) {
+          // 本文が読めない / JSONでない場合は成功扱い（到達はできている）
         }
+        if (explicitError) throw new Error(explicitError);
 
         // 二重送信防止：成功したら申込データを削除
         localStorage.removeItem(STORAGE_KEY);
