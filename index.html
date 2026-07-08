@@ -1234,8 +1234,11 @@
         <!-- Loading state -->
         <div class="form-loading" id="form-loading">
           <div class="spinner"></div>
-          <p class="loading-text">AIが分析しています...</p>
-          <p class="loading-sub">そのままお待ちください（通常1〜3分）</p>
+          <p class="loading-text">送信しています...</p>
+          <p class="loading-sub">数秒お待ちください</p>
+          <p class="loading-sub" id="loading-slow-note" style="display:none;">
+            通信状況により少し時間がかかることがあります。そのままお待ちください。
+          </p>
         </div>
 
         <!-- Success state -->
@@ -1406,8 +1409,19 @@
       }
 
       // 無料プラン: GASに送信
+      // doPostは申込をキューに記録して即返す（レポート生成は別トリガー）。
+      // 通常は数秒で完了。生成・メール送信は裏のprocessQueueが担当する。
       // Content-Type: text/plain にすることでCORSプリフライトを回避（GAS制約）
       showLoading();
+
+      // コールドスタート時の保険：8秒経過で追加案内を表示
+      const slowNote = document.getElementById('loading-slow-note');
+      if (slowNote) slowNote.style.display = 'none';
+      const slowTimer = setTimeout(() => { if (slowNote) slowNote.style.display = 'block'; }, 8000);
+
+      // 30秒でタイムアウト（無限スピナー防止）
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
 
       try {
         const resp = await fetch(GAS_ENDPOINT, {
@@ -1415,6 +1429,7 @@
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(data),
           redirect: 'follow',
+          signal: controller.signal,
         });
         // GASは200・302どちらも正常応答とみなす
         if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
@@ -1422,6 +1437,9 @@
       } catch (err) {
         console.error(err);
         showFormError();
+      } finally {
+        clearTimeout(timeout);
+        clearTimeout(slowTimer);
       }
     });
   </script>
