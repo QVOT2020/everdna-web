@@ -1,1 +1,1449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EverDNA — ブランドの本質を言語化する</title>
 
+  <!-- GA4 計測タグ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J80MJ9M5C4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J80MJ9M5C4');
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #111111;
+      --gray-900: #1a1a1a;
+      --gray-600: #666666;
+      --gray-400: #aaaaaa;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --accent: #2a5cff;
+      --accent-light: #e8eeff;
+      --error: #e53e3e;
+      --success: #38a169;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--black);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--black); }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 9px 22px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 48px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-inner { max-width: 680px; }
+
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 28px;
+    }
+    .hero-title strong { font-weight: 700; }
+    .hero-title .accent { color: var(--accent); }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--gray-600);
+      line-height: 1.85;
+      margin-bottom: 44px;
+      max-width: 520px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 16px 36px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: transparent;
+      border: 1.5px solid var(--black);
+      padding: 15px 32px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { background: var(--accent); color: var(--white); border-color: var(--accent); transform: translateY(-1px); }
+
+    .hero-note {
+      font-size: 13px;
+      color: var(--gray-400);
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section { padding: 100px 48px; }
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 300;
+      line-height: 1.25;
+      color: var(--black);
+      margin-bottom: 56px;
+    }
+    .section-title strong { font-weight: 700; }
+
+    /* ─── FEATURES ─── */
+    .features { background: var(--gray-100); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      padding: 48px 40px;
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .feature-icon svg { width: 28px; height: 28px; }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .feature-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+    }
+
+    /* ─── STEPS ─── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    .step {
+      padding: 40px;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -12px;
+      top: 50px;
+      font-size: 20px;
+      color: var(--gray-400);
+    }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .step-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+    }
+
+    /* ─── PRICING ─── */
+    .pricing { background: var(--gray-100); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2px;
+      max-width: 760px;
+    }
+
+    .plan-card {
+      background: var(--white);
+      padding: 48px 40px;
+      position: relative;
+    }
+
+    .plan-card.plan-paid {
+      background: var(--black);
+    }
+
+    .plan-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .plan-card.plan-paid .plan-badge { color: #7090ff; }
+
+    .plan-price {
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .plan-card.plan-paid .plan-price { color: var(--white); }
+
+    .plan-price-unit {
+      font-weight: 400;
+    }
+
+    .plan-price-note {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 28px;
+    }
+    .plan-card.plan-paid .plan-price-note { color: #666; }
+
+    .plan-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+    .plan-card.plan-paid .plan-desc { color: #999; }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 36px;
+    }
+
+    .plan-features li {
+      font-size: 14px;
+      color: var(--gray-600);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .plan-card.plan-paid .plan-features li {
+      color: #bbb;
+      border-bottom-color: #222;
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .plan-features li.locked::before {
+      content: '—';
+      color: var(--gray-400);
+    }
+    .plan-features li.locked { color: var(--gray-400); }
+
+    .btn-plan-free {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 14px 0;
+      text-decoration: none;
+      transition: background 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-plan-free:hover { background: var(--accent); }
+
+    .btn-plan-paid {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: var(--white);
+      padding: 14px 0;
+      text-decoration: none;
+      transition: background 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-plan-paid:hover { background: var(--accent-light); }
+
+    .plan-popular {
+      position: absolute;
+      top: -1px;
+      right: 40px;
+      background: var(--accent);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+    }
+
+    /* ─── SAMPLE REPORT ─── */
+    .sample-section { background: var(--white); }
+
+    .sample-card {
+      background: var(--gray-100);
+      border-left: 3px solid var(--accent);
+      padding: 40px 48px;
+      max-width: 720px;
+    }
+
+    .sample-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .sample-company {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+
+    .sample-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--black);
+      margin: 24px 0 8px;
+    }
+
+    .sample-text {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.8;
+    }
+
+    .sample-values {
+      list-style: none;
+      margin: 12px 0;
+    }
+    .sample-values li {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      gap: 10px;
+    }
+    .sample-values li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .sample-blur {
+      position: relative;
+      margin-top: 20px;
+    }
+    .sample-blur-content {
+      filter: blur(4px);
+      user-select: none;
+      pointer-events: none;
+    }
+    .sample-blur-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(transparent, rgba(245,245,245,0.85));
+    }
+    .sample-blur-cta {
+      display: inline-block;
+      background: var(--black);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 12px 24px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .sample-blur-cta:hover { background: var(--accent); }
+
+    /* ─── DIAGNOSIS FORM ─── */
+    .form-section { background: var(--white); padding-top: 80px; }
+
+    .form-wrapper {
+      max-width: 720px;
+    }
+
+    /* Plan toggle */
+    .plan-toggle {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 48px;
+    }
+    .plan-toggle-btn {
+      flex: 1;
+      padding: 16px 24px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-align: center;
+      transition: all 0.18s;
+      line-height: 1.4;
+    }
+    .plan-toggle-btn.active {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+    .plan-toggle-btn small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+    .plan-toggle-btn.active small { opacity: 0.6; }
+
+    /* Form grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 24px;
+    }
+    .form-grid .form-field-full { grid-column: 1 / -1; }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      letter-spacing: 0.3px;
+    }
+    .form-field label .required {
+      color: var(--accent);
+      margin-left: 3px;
+    }
+    .form-field input:not([type="checkbox"]),
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--black);
+      background: var(--white);
+      border: 1.5px solid rgba(0,0,0,0.14);
+      border-radius: 0;
+      outline: none;
+      transition: border-color 0.18s;
+      appearance: none;
+    }
+    .form-field input:not([type="checkbox"]):focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-field input:not([type="checkbox"]).error,
+    .form-field select.error,
+    .form-field textarea.error {
+      border-color: var(--error);
+    }
+    .form-field textarea { resize: vertical; min-height: 90px; }
+    .form-field .field-error {
+      font-size: 11px;
+      color: var(--error);
+      display: none;
+    }
+    .form-field input.error + .field-error,
+    .form-field select.error + .field-error,
+    .form-field textarea.error + .field-error {
+      display: block;
+    }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--gray-400);
+      pointer-events: none;
+    }
+    .select-wrap select { padding-right: 36px; }
+
+    /* Keywords row */
+    .keywords-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .keywords-row input { font-size: 13px; }
+
+    /* Privacy consent */
+    .consent-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .consent-wrap input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .consent-wrap label {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      cursor: pointer;
+    }
+    .consent-wrap label a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* Submit */
+    .form-submit-area { margin-top: 32px; }
+
+    .btn-submit {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 18px 0;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      font-family: inherit;
+    }
+    .btn-submit:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .form-note {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 12px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Loading state */
+    .form-loading {
+      display: none;
+      text-align: center;
+      padding: 60px 0;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--gray-100);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 15px;
+      color: var(--gray-600);
+    }
+    .loading-sub {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 6px;
+    }
+
+    /* Success state */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 60px 0;
+    }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .success-icon svg { width: 24px; height: 24px; color: var(--success); }
+    .success-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .success-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .success-note {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 12px;
+    }
+
+    /* Error banner */
+    .form-error-banner {
+      display: none;
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--error);
+      margin-bottom: 20px;
+    }
+
+    /* ─── BOTTOM CTA ─── */
+    .cta-section {
+      background: var(--black);
+      text-align: center;
+    }
+    .cta-section .section-label { color: var(--gray-400); }
+    .cta-title {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+    .cta-title strong { font-weight: 700; }
+    .cta-desc {
+      font-size: 16px;
+      color: var(--gray-400);
+      margin-bottom: 44px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-white {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: var(--white);
+      padding: 16px 40px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-white:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+    .btn-outline-white {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      padding: 15px 36px;
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-outline-white:hover { border-color: var(--white); transform: translateY(-1px); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 40px 48px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .footer-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .footer-logo {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .footer-company {
+      font-size: 12px;
+      color: var(--gray-400);
+      line-height: 1.8;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .footer-link {
+      font-size: 12px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--black); }
+    .footer-bottom {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding-top: 20px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { gap: 16px; }
+      .nav-link { display: none; }
+      .hero { padding: 100px 24px 60px; }
+      section { padding: 72px 24px; }
+      .form-section { padding: 60px 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .form-field-full { grid-column: auto; }
+      .keywords-row { grid-template-columns: 1fr; }
+      .plan-toggle { flex-direction: column; }
+      .step:not(:last-child)::after { display: none; }
+      .sample-card { padding: 28px 24px; }
+      .cta-buttons { flex-direction: column; align-items: stretch; text-align: center; }
+      .footer-main { flex-direction: column; gap: 20px; }
+      .footer-links { flex-wrap: wrap; gap: 16px; }
+      footer { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="logo" href="/">EverDNA</a>
+    <div class="nav-links">
+      <a class="nav-link" href="#features">特徴</a>
+      <a class="nav-link" href="#pricing">料金</a>
+      <a class="nav-link" href="#sample">サンプル</a>
+      <a class="nav-cta" href="#form">無料で試す</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="padding:0">
+    <div class="hero">
+      <div class="hero-inner">
+        <p class="hero-label">Brand DNA Diagnosis</p>
+        <h1 class="hero-title">
+          あなたの企業の<br>
+          <strong>本質</strong>を、<br>
+          言語で<span class="accent">可視化</span>する。
+        </h1>
+        <p class="hero-desc">
+          企業URLを入力するだけで、AIがブランドの価値観・トーン・
+          ポジショニングを分析。「自社らしさ」を言葉にするための
+          ブランドDNAレポートをお届けします。
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#form">無料で診断する →</a>
+          <a class="btn-secondary" href="#sample">サンプルを見る</a>
+          <span class="hero-note">登録不要・約2分で完了</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <p class="section-label">Features</p>
+      <h2 class="section-title">EverDNAで<strong>できること</strong></h2>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">ブランド価値観の抽出</h3>
+          <p class="feature-desc">
+            ホームページのテキスト・トーン・構造をAIが読み解き、
+            御社ブランドが大切にしている価値観を言語化します。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">コミュニケーションDNA</h3>
+          <p class="feature-desc">
+            文章のトーン・言葉の選び方・伝え方のクセを分析。
+            採用・広報・マーケ資料に一貫性をもたらします。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">レポートをメールで受信</h3>
+          <p class="feature-desc">
+            診断結果はブランドDNAレポートとしてメール送付。
+            チームで共有してすぐに活用できます。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- STEPS -->
+  <section id="how">
+    <div class="section-inner">
+      <p class="section-label">How it works</p>
+      <h2 class="section-title"><strong>3ステップ</strong>で診断完了</h2>
+      <div class="steps-grid">
+
+        <div class="step">
+          <p class="step-number">Step 01</p>
+          <h3 class="step-title">フォームに入力</h3>
+          <p class="step-desc">
+            このページのフォームに企業名・URL・業種・メールアドレスを入力します。
+            アカウント登録は不要です。
+          </p>
+        </div>
+
+        <div class="step">
+          <p class="step-number">Step 02</p>
+          <h3 class="step-title">AIが分析</h3>
+          <p class="step-desc">
+            AIがWebサイトの内容・言葉・構造を読み込み、
+            ブランドのDNAを多角的に分析します。
+          </p>
+        </div>
+
+        <div class="step">
+          <p class="step-number">Step 03</p>
+          <h3 class="step-title">レポートを受け取る</h3>
+          <p class="step-desc">
+            数分以内にブランドDNAレポートをメールでお送りします。
+            すぐにチームで共有・活用できます。
+          </p>
+        </div>
+
+        <div class="step">
+          <p class="step-number">Step 04 <span style="font-size:10px;color:var(--gray-400)">(有料プランのみ)</span></p>
+          <h3 class="step-title">フルレポートへ</h3>
+          <p class="step-desc">
+            無料サマリーに満足いただけたら、そのままフルレポートへアップグレード。
+            追加の入力は不要です。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SAMPLE REPORT -->
+  <section class="sample-section" id="sample">
+    <div class="section-inner">
+      <p class="section-label">Sample</p>
+      <h2 class="section-title">レポート<strong>サンプル</strong></h2>
+
+      <div class="sample-card">
+        <p class="sample-label">Brand DNA Report</p>
+        <p class="sample-company">株式会社〇〇（IT・SaaS / 従業員50名）— 無料サマリー</p>
+
+        <p class="sample-section-title">1. ブランドDNAサマリー</p>
+        <p class="sample-text">
+          「複雑さを、やさしさに変える」という信念のもと、中小企業が抱える業務の非効率を
+          AIでシンプルに解決することを存在意義としている。顧客との長期的な信頼関係を軸に、
+          誠実で親しみやすいブランドを体現している。
+        </p>
+
+        <p class="sample-section-title">2. コアバリュー</p>
+        <ul class="sample-values">
+          <li><strong>シンプリシティ</strong>：複雑な技術を誰でも使えるかたちに翻訳する</li>
+          <li><strong>誠実さ</strong>：誇張のない言葉で、正直に価値を届ける</li>
+          <li><strong>共創</strong>：顧客とともに課題を定義し、一緒に解決策をつくる</li>
+        </ul>
+
+        <!-- ぼかし：有料セクションのプレビュー -->
+        <div class="sample-blur">
+          <div class="sample-blur-content">
+            <p class="sample-section-title">3. ブランドパーソナリティ</p>
+            <p class="sample-text">
+              穏やかで頼りになる中堅エンジニア。専門用語を使わず噛み砕いて話すが、内容は本質を突いている。
+              威圧感がなく、初対面でも安心して相談できる雰囲気を持つ。ユーモアはさりげなく、
+              誠実さが滲み出る存在。
+            </p>
+            <p class="sample-section-title">4. コミュニケーションDNA</p>
+            <p class="sample-text">
+              トーン：親しみやすく、しかしプロフェッショナル。避けるべき表現：「革命的」「ゲームチェンジャー」
+              などの誇張表現。推奨表現：「一緒に」「わかりやすく」「現場から」。
+            </p>
+          </div>
+          <div class="sample-blur-overlay">
+            <a class="sample-blur-cta" href="#form">フルレポートで続きを見る →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="section-inner">
+      <p class="section-label">Pricing</p>
+      <h2 class="section-title">まず<strong>無料</strong>で体験する</h2>
+
+      <div class="pricing-grid">
+
+        <!-- 無料プラン -->
+        <div class="plan-card">
+          <p class="plan-badge">Free</p>
+          <p class="plan-price">¥<span class="plan-price-unit">0</span></p>
+          <p class="plan-price-note">登録不要・すぐに試せる</p>
+          <p class="plan-desc">
+            ブランドDNAのエッセンスを無料でお届け。
+            サマリーとコアバリューを確認できます。
+          </p>
+          <ul class="plan-features">
+            <li>ブランドDNAサマリー</li>
+            <li>コアバリュー（3項目）</li>
+            <li class="locked">ブランドパーソナリティ</li>
+            <li class="locked">コミュニケーションDNA</li>
+            <li class="locked">ブランドポジショニング</li>
+            <li class="locked">今後の活用アドバイス</li>
+          </ul>
+          <a class="btn-plan-free" href="#form" onclick="selectPlan('free')">
+            無料で診断する →
+          </a>
+        </div>
+
+        <!-- 有料プラン -->
+        <div class="plan-card plan-paid">
+          <span class="plan-popular">おすすめ</span>
+          <p class="plan-badge">Full Report</p>
+          <p class="plan-price" style="color:#fff">¥<span class="plan-price-unit">1,980</span></p>
+          <p class="plan-price-note">¥1,980 / 診断1回（税込）</p>
+          <p class="plan-desc">
+            ブランドDNAを徹底的に言語化。
+            採用・広報・マーケに即活用できる
+            全6セクションのフルレポート。
+          </p>
+          <ul class="plan-features">
+            <li>ブランドDNAサマリー</li>
+            <li>コアバリュー（3〜5項目）</li>
+            <li>ブランドパーソナリティ</li>
+            <li>コミュニケーションDNA</li>
+            <li>ブランドポジショニング</li>
+            <li>今後の活用アドバイス</li>
+          </ul>
+          <a class="btn-plan-paid" href="#form" onclick="selectPlan('paid')">
+            フルレポートを取得する →
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DIAGNOSIS FORM -->
+  <section class="form-section" id="form">
+    <div class="section-inner">
+      <p class="section-label">Diagnosis</p>
+      <h2 class="section-title">ブランドDNA診断を<strong>申し込む</strong></h2>
+
+      <div class="form-wrapper">
+
+        <!-- Plan selector -->
+        <div class="plan-toggle" role="group" aria-label="プラン選択">
+          <button type="button" class="plan-toggle-btn active" id="toggle-free" onclick="selectPlan('free')">
+            無料サマリー
+            <small>¥0・サマリー＋コアバリュー</small>
+          </button>
+          <button type="button" class="plan-toggle-btn" id="toggle-paid" onclick="selectPlan('paid')">
+            フルレポート
+            <small>¥1,980（税込）・全6セクション</small>
+          </button>
+        </div>
+
+        <!-- Error banner -->
+        <div class="form-error-banner" id="form-error-banner">
+          送信エラーが発生しました。しばらく時間をおいて再度お試しください。
+        </div>
+
+        <!-- Form body -->
+        <div id="form-body">
+          <form id="diagnosis-form" novalidate>
+            <div class="form-grid">
+
+              <div class="form-field">
+                <label for="company">企業名<span class="required">*</span></label>
+                <input type="text" id="company" name="company" placeholder="株式会社〇〇" required />
+                <span class="field-error">入力してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="url">企業WebサイトURL<span class="required">*</span></label>
+                <input type="url" id="url" name="url" placeholder="https://example.com" required />
+                <span class="field-error">URLを入力してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="industry">業種<span class="required">*</span></label>
+                <div class="select-wrap">
+                  <select id="industry" name="industry" required>
+                    <option value="">選択してください</option>
+                    <option>IT・SaaS</option>
+                    <option>製造業</option>
+                    <option>小売・EC</option>
+                    <option>金融・保険</option>
+                    <option>不動産</option>
+                    <option>医療・ヘルスケア</option>
+                    <option>教育</option>
+                    <option>コンサルティング</option>
+                    <option>メディア・広告</option>
+                    <option>飲食・サービス</option>
+                    <option>その他</option>
+                  </select>
+                </div>
+                <span class="field-error">選択してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="size">従業員規模<span class="required">*</span></label>
+                <div class="select-wrap">
+                  <select id="size" name="size" required>
+                    <option value="">選択してください</option>
+                    <option>1〜10名</option>
+                    <option>11〜50名</option>
+                    <option>51〜200名</option>
+                    <option>201〜500名</option>
+                    <option>501名以上</option>
+                  </select>
+                </div>
+                <span class="field-error">選択してください</span>
+              </div>
+
+              <div class="form-field form-field-full">
+                <label for="strengths">強み・他社との違い<span class="required">*</span></label>
+                <textarea id="strengths" name="strengths" placeholder="例：業界20年の専門知識と、スタートアップのようなスピード感を兼ね備えています。" required></textarea>
+                <span class="field-error">入力してください</span>
+              </div>
+
+              <div class="form-field form-field-full">
+                <label>ブランドキーワード（最大3つ）</label>
+                <div class="keywords-row">
+                  <input type="text" name="keyword1" placeholder="例：誠実" />
+                  <input type="text" name="keyword2" placeholder="例：革新" />
+                  <input type="text" name="keyword3" placeholder="例：共創" />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="contact-name">担当者名<span class="required">*</span></label>
+                <input type="text" id="contact-name" name="contactName" placeholder="山田 太郎" required />
+                <span class="field-error">入力してください</span>
+              </div>
+
+              <div class="form-field">
+                <label for="email">メールアドレス<span class="required">*</span></label>
+                <input type="email" id="email" name="email" placeholder="taro@example.com" required />
+                <span class="field-error">正しいメールアドレスを入力してください</span>
+              </div>
+
+              <div class="form-field form-field-full">
+                <div class="consent-wrap">
+                  <input type="checkbox" id="consent" name="consent" required />
+                  <label for="consent">
+                    <a href="/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意します。
+                    入力いただいたメールアドレスに診断レポートをお送りします。
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-submit-area">
+              <button type="submit" class="btn-submit" id="submit-btn">
+                無料で診断する →
+              </button>
+              <p class="form-note" id="form-note">
+                登録不要。メールのみで診断レポートをお届けします。
+              </p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Loading state -->
+        <div class="form-loading" id="form-loading">
+          <div class="spinner"></div>
+          <p class="loading-text">送信しています...</p>
+          <p class="loading-sub">数秒お待ちください</p>
+          <p class="loading-sub" id="loading-slow-note" style="display:none;">
+            通信状況により少し時間がかかることがあります。そのままお待ちください。
+          </p>
+        </div>
+
+        <!-- Success state -->
+        <div class="form-success" id="form-success">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h3 class="success-title">診断申し込みを受け付けました</h3>
+          <p class="success-desc">
+            まもなくブランドDNAレポートをメールにてお送りします。<br>
+            メールが届かない場合は、迷惑メールフォルダもご確認ください。
+          </p>
+          <p class="success-note">送信先：<span id="success-email"></span></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="section-inner">
+      <p class="section-label">Get Started</p>
+      <h2 class="cta-title">あなたの企業の<strong>DNAを</strong><br>知ってみませんか？</h2>
+      <p class="cta-desc">
+        まずは無料診断から。サマリーレポートで
+        「自社らしさ」の輪郭を確認してください。
+      </p>
+      <div class="cta-buttons">
+        <a class="btn-white" href="#form">無料診断フォームへ →</a>
+        <a class="btn-outline-white" href="#sample">サンプルを見る</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-main">
+      <div>
+        <span class="footer-logo">EverDNA</span>
+        <p class="footer-company">
+          運営：合同会社クボット<br>
+          お問い合わせ：<a href="mailto:info@everdna.com" style="color:var(--gray-400);text-decoration:none;">info@everdna.com</a>
+        </p>
+      </div>
+      <div class="footer-links">
+        <a class="footer-link" href="/privacy.html">プライバシーポリシー</a>
+        <a class="footer-link" href="/tokutei.html">特定商取引法に基づく表示</a>
+        <a class="footer-link" href="mailto:info@everdna.com">お問い合わせ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 EverDNA / 合同会社クボット All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // ─── 設定 ──────────────────────────────────────────────────────────────────
+    // ▼ GASウェブアプリのURL【dev環境】
+    // 本番: AKfycbxuv6-dLRg_iQVvkBKeAT33eemjJ9jH_mOgLHfrUGIqD10lt7JMGTDGaIGawHjnIi4xpg
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbySdzC1OuZHjusYvMF7dwue1PhlHgHCXJonJbPUXehGdNq8-wMQj4xxUEMzV9HgLegb/exec';
+
+    // ▼ StripeのPayment LinkURL【dev＝テストモード】決済後 dev の thanks.html へリダイレクト設定が必要
+    // 本番: https://buy.stripe.com/bJe14p5Lm3miaHr9MY2ZO01
+    const STRIPE_URL = 'https://buy.stripe.com/test_7sY6oJ6H3cfx90K77ocfK01';
+    // ────────────────────────────────────────────────────────────────────────────
+
+    let currentPlan = 'free';
+
+    function selectPlan(plan) {
+      currentPlan = plan;
+      document.getElementById('toggle-free').classList.toggle('active', plan === 'free');
+      document.getElementById('toggle-paid').classList.toggle('active', plan === 'paid');
+
+      const btn = document.getElementById('submit-btn');
+      const note = document.getElementById('form-note');
+      if (plan === 'paid') {
+        btn.textContent = 'フルレポートを取得する（¥1,980）→';
+        note.textContent = '決済画面（Stripe）へ移動します。支払い完了後、自動でレポートをお送りします。';
+      } else {
+        btn.textContent = '無料で診断する →';
+        note.textContent = '登録不要。メールのみで診断レポートをお届けします。';
+      }
+    }
+
+    function validateForm() {
+      let valid = true;
+      const fields = ['company', 'url', 'industry', 'size', 'strengths', 'contact-name', 'email'];
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const isEmpty = !el.value.trim();
+        const isEmailInvalid = el.type === 'email' && el.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+        if (isEmpty || isEmailInvalid) {
+          el.classList.add('error');
+          valid = false;
+        } else {
+          el.classList.remove('error');
+        }
+      });
+      const consent = document.getElementById('consent');
+      if (!consent.checked) {
+        consent.style.outline = '2px solid var(--error)';
+        valid = false;
+      } else {
+        consent.style.outline = '';
+      }
+      return valid;
+    }
+
+    function getFormData() {
+      const f = document.getElementById('diagnosis-form');
+      return {
+        company:     f.company.value.trim(),
+        url:         f.url.value.trim(),
+        industry:    f.industry.value,
+        size:        f.size.value,
+        strengths:   f.strengths.value.trim(),
+        keyword1:    f.keyword1.value.trim(),
+        keyword2:    f.keyword2.value.trim(),
+        keyword3:    f.keyword3.value.trim(),
+        contactName: f.contactName.value.trim(),
+        email:       f.email.value.trim(),
+        plan:        currentPlan,
+      };
+    }
+
+    function showLoading() {
+      document.getElementById('form-body').style.display = 'none';
+      document.getElementById('form-loading').style.display = 'block';
+      document.getElementById('form-error-banner').style.display = 'none';
+    }
+
+    function showSuccess(email) {
+      document.getElementById('form-loading').style.display = 'none';
+      document.getElementById('form-success').style.display = 'block';
+      document.getElementById('success-email').textContent = email;
+    }
+
+    function showFormError() {
+      document.getElementById('form-loading').style.display = 'none';
+      document.getElementById('form-body').style.display = 'block';
+      document.getElementById('form-error-banner').style.display = 'block';
+    }
+
+    document.getElementById('diagnosis-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!validateForm()) return;
+
+      const data = getFormData();
+
+      if (currentPlan === 'paid') {
+        // 有料プラン: 申込データをlocalStorageに保存し、同タブでStripeへ遷移。
+        // 決済完了後、Stripe側のリダイレクト設定で /thanks.html に戻り、
+        // thanks.html が保存データをGASへ送信してレポート生成を開始する。
+        try {
+          localStorage.setItem('everdna_pending_order', JSON.stringify({
+            data: data,
+            savedAt: Date.now(),
+          }));
+        } catch (err) {
+          console.error('localStorage error:', err);
+        }
+        const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email);
+        window.location.href = stripeUrl;
+        return;
+      }
+
+      // 無料プラン: GASに送信
+      // doPostは申込をキューに記録して即返す（レポート生成は別トリガー）。
+      // 通常は数秒で完了。生成・メール送信は裏のprocessQueueが担当する。
+      // Content-Type: text/plain にすることでCORSプリフライトを回避（GAS制約）
+      showLoading();
+
+      // コールドスタート時の保険：8秒経過で追加案内を表示
+      const slowNote = document.getElementById('loading-slow-note');
+      if (slowNote) slowNote.style.display = 'none';
+      const slowTimer = setTimeout(() => { if (slowNote) slowNote.style.display = 'block'; }, 8000);
+
+      // 30秒でタイムアウト（無限スピナー防止）
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+
+      try {
+        const resp = await fetch(GAS_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data),
+          redirect: 'follow',
+          signal: controller.signal,
+        });
+        // GASは200・302どちらも正常応答とみなす
+        if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
+        showSuccess(data.email);
+      } catch (err) {
+        console.error(err);
+        showFormError();
+      } finally {
+        clearTimeout(timeout);
+        clearTimeout(slowTimer);
+      }
+    });
+  </script>
+
+</body>
+</html>
