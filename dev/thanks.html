@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="EverDNA ブランドDNA診断 決済完了ページ" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>決済完了 — EverDNA</title>
+
+  <!-- GA4 計測タグ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J80MJ9M5C4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J80MJ9M5C4');
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #111111;
+      --gray-600: #666666;
+      --gray-400: #aaaaaa;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --accent: #2a5cff;
+      --error: #e53e3e;
+      --success: #38a169;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--black);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    main {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px 80px;
+    }
+    .card {
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .state { display: none; }
+    .state.active { display: block; }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--gray-100);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .spinner { animation-duration: 1.8s; }
+      .btn-home, .btn-retry { transition: none; }
+    }
+
+    .status-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      border: 2px solid var(--success);
+    }
+    .status-icon svg { width: 24px; height: 24px; color: var(--success); }
+    .status-icon.icon-error { border-color: var(--error); }
+    .status-icon.icon-error svg { color: var(--error); }
+
+    .page-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(24px, 4vw, 32px);
+      font-weight: 300;
+      line-height: 1.35;
+      margin-bottom: 16px;
+    }
+    h1 strong { font-weight: 700; }
+    .desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.85;
+      margin-bottom: 12px;
+    }
+    .note {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 8px;
+    }
+    .note a { color: var(--accent); }
+
+    .btn-home {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--black);
+      padding: 14px 36px;
+      text-decoration: none;
+      margin-top: 32px;
+      transition: background 0.2s;
+    }
+    .btn-home:hover { background: var(--accent); }
+
+    .btn-retry {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--black);
+      background: transparent;
+      border: 1.5px solid var(--black);
+      padding: 13px 32px;
+      cursor: pointer;
+      margin-top: 32px;
+      font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-retry:hover { background: var(--accent); color: var(--white); border-color: var(--accent); }
+
+    footer {
+      padding: 40px 48px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .footer-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .footer-logo {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .footer-company {
+      font-size: 12px;
+      color: var(--gray-400);
+      line-height: 1.8;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .footer-link {
+      font-size: 12px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--black); }
+    .footer-bottom {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding-top: 20px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .footer-main { flex-direction: column; gap: 20px; }
+      .footer-links { flex-wrap: wrap; gap: 16px; }
+      footer { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="/">EverDNA</a>
+  </nav>
+
+  <main>
+    <div class="card" role="status" aria-live="polite">
+
+      <!-- 送信中 -->
+      <div class="state active" id="state-loading">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="page-label">Payment Completed</p>
+        <h1>決済が<strong>完了</strong>しました</h1>
+        <p class="desc">
+          お申し込み内容を送信しています。<br>
+          このままページを閉じずにお待ちください。
+        </p>
+        <p class="note" id="loading-slow-note" style="display:none;">
+          通信状況によっては少し時間がかかることがあります。<br>
+          ページを閉じずにそのままお待ちください。
+        </p>
+      </div>
+
+      <!-- 送信成功 -->
+      <div class="state" id="state-success">
+        <div class="status-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <p class="page-label">Thank You</p>
+        <h1>フルレポートの申し込みが<br><strong>完了</strong>しました</h1>
+        <p class="desc">
+          決済ありがとうございました。<br>
+          AIが分析を開始しました。数分以内にブランドDNAフルレポートを
+          メールでお届けします。
+        </p>
+        <p class="note" id="success-email-note"></p>
+        <p class="note">
+          メールが届かない場合は、迷惑メールフォルダをご確認のうえ、
+          <a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
+        </p>
+        <a class="btn-home" href="/">トップページへ戻る</a>
+      </div>
+
+      <!-- 申込データなし（直接アクセス・別ブラウザで戻った場合など） -->
+      <div class="state" id="state-generic">
+        <div class="status-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <p class="page-label">Thank You</p>
+        <h1>決済が<strong>完了</strong>しました</h1>
+        <p class="desc">
+          決済ありがとうございました。<br>
+          ブランドDNAフルレポートは、お申し込み時のメールアドレス宛に
+          順次お届けします。
+        </p>
+        <p class="note">
+          レポートが届かない場合は、迷惑メールフォルダをご確認のうえ、
+          <a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
+        </p>
+        <a class="btn-home" href="/">トップページへ戻る</a>
+      </div>
+
+      <!-- 送信エラー -->
+      <div class="state" id="state-error">
+        <div class="status-icon icon-error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.5"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        </div>
+        <p class="page-label">Payment Completed</p>
+        <h1>申し込み内容の送信に<br><strong>失敗</strong>しました</h1>
+        <p class="desc">
+          決済は完了していますのでご安心ください。<br>
+          通信状況をご確認のうえ、再送信をお試しください。
+        </p>
+        <p class="note">
+          解決しない場合は <a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
+          レポートを手動でお送りします。
+        </p>
+        <button type="button" class="btn-retry" id="btn-retry" onclick="submitOrder()">再送信する</button>
+        <p class="note" style="margin-top:20px;">
+          <a href="/">トップページへ戻る</a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-main">
+      <div>
+        <span class="footer-logo">EverDNA</span>
+        <p class="footer-company">
+          運営：合同会社クボット<br>
+          お問い合わせ：<a href="mailto:info@everdna.com" style="color:var(--gray-400);text-decoration:none;">info@everdna.com</a>
+        </p>
+      </div>
+      <div class="footer-links">
+        <a class="footer-link" href="/privacy.html">プライバシーポリシー</a>
+        <a class="footer-link" href="/tokutei.html">特定商取引法に基づく表示</a>
+        <a class="footer-link" href="mailto:info@everdna.com">お問い合わせ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 EverDNA / 合同会社クボット All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // index.html と同じGASウェブアプリURL【dev環境】
+    // 本番: AKfycbxuv6-dLRg_iQVvkBKeAT33eemjJ9jH_mOgLHfrUGIqD10lt7JMGTDGaIGawHjnIi4xpg
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbySdzC1OuZHjusYvMF7dwue1PhlHgHCXJonJbPUXehGdNq8-wMQj4xxUEMzV9HgLegb/exec';
+
+    const STORAGE_KEY = 'everdna_pending_order';
+    const MAX_AGE_MS  = 2 * 60 * 60 * 1000; // 2時間で申込データを無効化
+
+    let isSubmitting = false;
+    let slowTimer = null;
+
+    function warnUnload(e) { e.preventDefault(); e.returnValue = ''; }
+    function setInflight(on) {
+      if (on) window.addEventListener('beforeunload', warnUnload);
+      else window.removeEventListener('beforeunload', warnUnload);
+    }
+
+    function showState(id) {
+      document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      // 状態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
+      const h = document.querySelector('#' + id + ' h1');
+      if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+    }
+
+    function loadPendingOrder() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const saved = JSON.parse(raw);
+        if (!saved || !saved.data || !saved.data.email) return null;
+        if (Date.now() - (saved.savedAt || 0) > MAX_AGE_MS) {
+          localStorage.removeItem(STORAGE_KEY);
+          return null;
+        }
+        return saved.data;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    async function submitOrder() {
+      if (isSubmitting) return; // 二重送信・連打防止
+      const data = loadPendingOrder();
+      if (!data) {
+        showState('state-generic');
+        return;
+      }
+      data.plan = 'paid'; // 決済完了ページ経由は必ず有料扱い
+      isSubmitting = true;
+      setInflight(true); // 送信中はページ離脱を警告
+      showState('state-loading');
+
+      // doPostは申込をキューに記録して即返す（レポート生成は別トリガー）。
+      // 通常1〜2秒で完了。10秒以上かかったら追加の案内を表示
+      const slowNote = document.getElementById('loading-slow-note');
+      if (slowNote) slowNote.style.display = 'none';
+      slowTimer = setTimeout(() => { if (slowNote) slowNote.style.display = 'block'; }, 10000);
+
+      // 75秒でタイムアウト（無限スピナー防止。同期版GASが残る移行期でも誤爆しない余裕）
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 75000);
+
+      try {
+        // Content-Type: text/plain でCORSプリフライトを回避（GAS制約）
+        const resp = await fetch(GAS_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data),
+          redirect: 'follow',
+          signal: controller.signal,
+        });
+        if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
+
+        // GASは検証エラーでもHTTP 200を返すため、本文のsuccessを確認する。
+        // ただしGASは302リダイレクトを挟むため、クロスオリジンで本文を読めない
+        // ことがある（resp.text()がTypeErrorを投げる）。その場合は「GASに到達＝
+        // 受付成功」とみなし、明示的な success:false のときのみ失敗として扱う。
+        let explicitError = null;
+        try {
+          const body = await resp.text();
+          if (body) {
+            const json = JSON.parse(body);
+            if (json && json.success === false) {
+              explicitError = json.error || '受付に失敗しました';
+            }
+          }
+        } catch (_) {
+          // 本文が読めない / JSONでない場合は成功扱い（到達はできている）
+        }
+        if (explicitError) throw new Error(explicitError);
+
+        // 二重送信防止：成功したら申込データを削除
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById('success-email-note').textContent = '送信先：' + data.email;
+        showState('state-success');
+        gtag('event', 'purchase_report_requested', { plan: 'paid' });
+      } catch (err) {
+        console.error(err);
+        showState('state-error');
+      } finally {
+        clearTimeout(timeout);
+        clearTimeout(slowTimer);
+        isSubmitting = false;
+        setInflight(false);
+      }
+    }
+
+    submitOrder();
+  </script>
+
+</body>
+</html>
