@@ -367,71 +367,22 @@
       }
     }
 
-    async function submitOrder() {
-      if (isSubmitting) return; // 二重送信・連打防止
+    // 【dev / 案B】レポート生成は Stripe Webhook（checkout.session.completed）が
+    //  決済完了イベントから発火する。このページはGASへ送信せず、受付表示のみ。
+    //  → thanks.html への復帰有無に依存しない＆二重投入も起きない。
+    function submitOrder() {
       const data = loadPendingOrder();
       if (!data) {
+        // 申込データが無くても、決済自体は完了しているので汎用の完了表示にする
         showState('state-generic');
         return;
       }
-      data.plan = 'paid'; // 決済完了ページ経由は必ず有料扱い
-      isSubmitting = true;
-      setInflight(true); // 送信中はページ離脱を警告
-      showState('state-loading');
-
-      // doPostは申込をキューに記録して即返す（レポート生成は別トリガー）。
-      // 通常1〜2秒で完了。10秒以上かかったら追加の案内を表示
-      const slowNote = document.getElementById('loading-slow-note');
-      if (slowNote) slowNote.style.display = 'none';
-      slowTimer = setTimeout(() => { if (slowNote) slowNote.style.display = 'block'; }, 10000);
-
-      // 75秒でタイムアウト（無限スピナー防止。同期版GASが残る移行期でも誤爆しない余裕）
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 75000);
-
-      try {
-        // Content-Type: text/plain でCORSプリフライトを回避（GAS制約）
-        const resp = await fetch(GAS_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(data),
-          redirect: 'follow',
-          signal: controller.signal,
-        });
-        if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
-
-        // GASは検証エラーでもHTTP 200を返すため、本文のsuccessを確認する。
-        // ただしGASは302リダイレクトを挟むため、クロスオリジンで本文を読めない
-        // ことがある（resp.text()がTypeErrorを投げる）。その場合は「GASに到達＝
-        // 受付成功」とみなし、明示的な success:false のときのみ失敗として扱う。
-        let explicitError = null;
-        try {
-          const body = await resp.text();
-          if (body) {
-            const json = JSON.parse(body);
-            if (json && json.success === false) {
-              explicitError = json.error || '受付に失敗しました';
-            }
-          }
-        } catch (_) {
-          // 本文が読めない / JSONでない場合は成功扱い（到達はできている）
-        }
-        if (explicitError) throw new Error(explicitError);
-
-        // 二重送信防止：成功したら申込データを削除
-        localStorage.removeItem(STORAGE_KEY);
-        document.getElementById('success-email-note').textContent = '送信先：' + data.email;
-        showState('state-success');
-        gtag('event', 'purchase_report_requested', { plan: 'paid' });
-      } catch (err) {
-        console.error(err);
-        showState('state-error');
-      } finally {
-        clearTimeout(timeout);
-        clearTimeout(slowTimer);
-        isSubmitting = false;
-        setInflight(false);
-      }
+      // 二重表示防止：表示したら保存データを削除
+      localStorage.removeItem(STORAGE_KEY);
+      const note = document.getElementById('success-email-note');
+      if (note) note.textContent = '送信先：' + data.email;
+      showState('state-success');
+      try { gtag('event', 'purchase_report_requested', { plan: 'paid' }); } catch (_) {}
     }
 
     submitOrder();
