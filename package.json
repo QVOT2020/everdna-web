@@ -1,0 +1,7 @@
+{
+  "name": "everdna-web",
+  "private": true,
+  "dependencies": {
+    "stripe": "latest"
+  }
+}
