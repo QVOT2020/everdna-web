@@ -7,8 +7,6 @@ import Stripe from 'stripe';
 //   Stripeの署名検証は「生ボディのバイト列」が必要なので、パースを無効化する。
 export const config = { api: { bodyParser: false } };
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 // 生ボディ（Buffer）を読む。bodyParser無効化とセットで使う。
 async function readRawBody(req) {
   const chunks = [];
@@ -25,6 +23,7 @@ export default async function handler(req, res) {
   }
 
   // ① Stripe署名を検証（案Aの肝）
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // 遅延初期化（env未設定時のcold-startクラッシュ回避）
   let event;
   try {
     const rawBody = await readRawBody(req);
