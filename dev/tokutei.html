@@ -1,268 +1,74 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>特定商取引法に基づく表示 — EverDNA</title>
+  <meta name="robots" content="index,follow">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --black: #111111;
-      --gray-600: #666666;
-      --gray-400: #aaaaaa;
-      --gray-100: #f5f5f5;
-      --white: #ffffff;
-      --accent: #2a5cff;
+    /* --- 単体表示用の最小スタイル。既存サイトのCSSがある場合はそちらが優先されます --- */
+    :root{ --ink:#1a1a1a; --muted:#6b7280; --line:#e5e7eb; --bg:#ffffff; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+      line-height:1.9; -webkit-font-smoothing:antialiased;
     }
-    body {
-      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-      color: var(--black);
-      background: var(--white);
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
+    main{max-width:820px; margin:0 auto; padding:72px 24px 96px;}
+    .page-label{
+      font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--muted); margin:0 0 10px; font-weight:600;
     }
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 48px;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
+    h1{font-size:30px; line-height:1.35; margin:0 0 12px; font-weight:800;}
+    .updated{color:var(--muted); font-size:13px; margin:0 0 28px;}
+    table.legal{width:100%; border-collapse:collapse; margin-top:8px; font-size:15px;}
+    table.legal th, table.legal td{
+      text-align:left; vertical-align:top; padding:14px 16px; border-bottom:1px solid var(--line);
     }
-    .logo {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 4px;
-      color: var(--black);
-      text-decoration: none;
-      text-transform: uppercase;
+    table.legal th{
+      width:32%; font-weight:700; background:#f9fafb; white-space:nowrap;
     }
-    .nav-back {
-      font-size: 13px;
-      color: var(--gray-400);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .nav-back:hover { color: var(--black); }
-
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 72px 48px 120px;
-    }
-    .page-label {
-      font-size: 11px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-    h1 {
-      font-size: clamp(22px, 3vw, 32px);
-      font-weight: 300;
-      margin-bottom: 8px;
-    }
-    h1 strong { font-weight: 700; }
-    .updated {
-      font-size: 12px;
-      color: var(--gray-400);
-      margin-bottom: 56px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    tr {
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-    }
-    th {
-      text-align: left;
-      font-weight: 600;
-      color: var(--black);
-      padding: 18px 20px 18px 0;
-      width: 36%;
-      vertical-align: top;
-      white-space: nowrap;
-    }
-    td {
-      color: var(--gray-600);
-      padding: 18px 0;
-      line-height: 1.8;
-    }
-    td a { color: var(--accent); }
-
-    .note {
-      font-size: 13px;
-      color: var(--gray-400);
-      margin-top: 40px;
-      line-height: 1.8;
-      padding-top: 32px;
-      border-top: 1px solid rgba(0,0,0,0.08);
-    }
-
-    footer {
-      padding: 40px 48px;
-      border-top: 1px solid rgba(0,0,0,0.08);
-    }
-    .footer-main {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 28px;
-    }
-    .footer-logo {
-      font-size: 11px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--gray-400);
-      display: block;
-      margin-bottom: 8px;
-    }
-    .footer-company {
-      font-size: 12px;
-      color: var(--gray-400);
-      line-height: 1.8;
-    }
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .footer-link {
-      font-size: 12px;
-      color: var(--gray-400);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-link:hover { color: var(--black); }
-    .footer-bottom {
-      border-top: 1px solid rgba(0,0,0,0.06);
-      padding-top: 20px;
-      font-size: 12px;
-      color: var(--gray-400);
-    }
-    @media (max-width: 768px) {
-      nav { padding: 16px 24px; }
-      main { padding: 48px 24px 80px; }
-      .footer-main { flex-direction: column; gap: 20px; }
-      .footer-links { flex-wrap: wrap; gap: 16px; }
-      footer { padding: 32px 24px; }
-      table, tbody, tr, th, td { display: block; }
-      th { padding-bottom: 4px; color: var(--gray-400); font-size: 12px; white-space: normal; }
-      td { padding-top: 0; padding-bottom: 20px; }
+    table.legal td{color:#374151;}
+    a{color:#2563eb; text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    .note{color:var(--muted); font-size:13px; margin-top:18px;}
+    @media(max-width:600px){
+      main{padding:48px 18px 72px;} h1{font-size:24px;}
+      table.legal th, table.legal td{display:block; width:100%; white-space:normal;}
+      table.legal th{border-bottom:none; padding-bottom:2px;}
+      table.legal td{padding-top:4px;}
     }
   </style>
 </head>
 <body>
-
-  <nav>
-    <a class="logo" href="/">EverDNA</a>
-    <a class="nav-back" href="/">← トップページへ戻る</a>
-  </nav>
-
   <main>
     <p class="page-label">Legal</p>
-    <h1><strong>特定商取引法</strong>に基づく表示</h1>
-    <p class="updated">制定日：2026年6月20日</p>
+    <h1><strong>特定商取引法に基づく表示</strong></h1>
+    <p class="updated">制定日：2026年6月20日 ／ 最終改定日：2026年7月21日</p>
 
-    <table>
+    <table class="legal">
       <tbody>
-        <tr>
-          <th>販売業者</th>
-          <td>合同会社クボット</td>
-        </tr>
-        <tr>
-          <th>運営責任者</th>
-          <td>滝口 達也（Tatsuya Takiguchi）</td>
-        </tr>
-        <tr>
-          <th>所在地</th>
-          <td>
-            ※請求があれば遅滞なく開示します。<br>
-            <a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
-          </td>
-        </tr>
-        <tr>
-          <th>電話番号</th>
-          <td>
-            ※請求があれば遅滞なく開示します。<br>
-            <a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
-          </td>
-        </tr>
-        <tr>
-          <th>メールアドレス</th>
-          <td><a href="mailto:info@everdna.com">info@everdna.com</a></td>
-        </tr>
-        <tr>
-          <th>サービス名</th>
-          <td>EverDNA ブランドDNA診断</td>
-        </tr>
-        <tr>
-          <th>販売価格</th>
-          <td>
-            無料プラン：¥0<br>
-            フルレポート：¥1,980（税込）/ 診断1回
-          </td>
-        </tr>
-        <tr>
-          <th>支払方法</th>
-          <td>クレジットカード（Visa・Mastercard・American Express・JCB）</td>
-        </tr>
-        <tr>
-          <th>支払時期</th>
-          <td>申し込み時（クレジットカードによる即時決済）</td>
-        </tr>
-        <tr>
-          <th>役務の提供時期</th>
-          <td>決済完了後、原則として数分以内にメールにてレポートを送付します。</td>
-        </tr>
-        <tr>
-          <th>返品・キャンセルについて</th>
-          <td>
-            本サービスはデジタルコンテンツの即時提供であるため、
-            役務の提供（レポート送付）完了後のキャンセル・返金はお受けできません。<br>
-            ただし、技術的障害等により役務が提供できなかった場合は、
-            個別にご対応します。<a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。
-          </td>
-        </tr>
-        <tr>
-          <th>動作環境</th>
-          <td>最新版のGoogle Chrome / Safari / Microsoft Edge（PC・スマートフォン）</td>
-        </tr>
-        <tr>
-          <th>決済システム</th>
-          <td>Stripe, Inc.（PCI DSS準拠。カード情報は当社サーバーに保存しません）</td>
-        </tr>
+        <tr><th>販売業者</th><td>合同会社クボット</td></tr>
+        <tr><th>運営責任者</th><td>滝口 達也（Tatsuya Takiguchi）</td></tr>
+        <tr><th>所在地</th><td>※請求があれば遅滞なく開示します。<br><a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。</td></tr>
+        <tr><th>電話番号</th><td>※請求があれば遅滞なく開示します。<br><a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。</td></tr>
+        <tr><th>メールアドレス</th><td><a href="mailto:info@everdna.com">info@everdna.com</a></td></tr>
+        <tr><th>サービス名</th><td>EverDNA ブランドDNA診断</td></tr>
+        <tr><th>販売価格</th><td>無料プラン：¥0<br>フルレポート：¥1,980（税込）／ 診断1回</td></tr>
+        <tr><th>商品代金以外の必要料金</th><td>なし（通信環境に係る通信費はお客様のご負担となります）</td></tr>
+        <tr><th>支払方法</th><td>クレジットカード（Visa・Mastercard・American Express・JCB）</td></tr>
+        <tr><th>支払時期</th><td>申し込み時（クレジットカードによる即時決済）</td></tr>
+        <tr><th>役務の提供時期</th><td>決済完了後、原則として数分以内にメールにてレポートを送付します。</td></tr>
+        <tr><th>返品・キャンセルについて</th><td>本サービスはデジタルコンテンツの即時提供であるため、役務の提供（レポート送付）完了後のキャンセル・返金はお受けできません。ただし、技術的障害等により役務が提供できなかった場合は、個別にご対応します。<a href="mailto:info@everdna.com">info@everdna.com</a> までご連絡ください。<br>なお、無料プラン（¥0）は課金・返金の対象外です。</td></tr>
+        <tr><th>返品特約・クーリングオフについて</th><td>本サービスは通信販売に該当し、特定商取引法上のクーリングオフ制度は適用されません。返品・キャンセルの可否は上記「返品・キャンセルについて」に定めるとおりです。</td></tr>
+        <tr><th>動作環境</th><td>最新版のGoogle Chrome / Safari / Microsoft Edge（PC・スマートフォン）</td></tr>
+        <tr><th>決済システム</th><td>Stripe, Inc.（PCI DSS準拠。カード情報は当社サーバーに保存しません）</td></tr>
+        <tr><th>適格請求書（インボイス）</th><td>適格請求書発行事業者 登録番号：T1010903002586</td></tr>
       </tbody>
     </table>
 
-    <p class="note">
-      ※ 所在地・電話番号は、消費者庁のガイドラインに従い、請求があった場合に開示します。<br>
-      ※ 本表示は予告なく変更することがあります。最新情報は本ページをご確認ください。
-    </p>
+    <p class="note">※ 所在地・電話番号は、消費者庁のガイドラインに従い、請求があった場合に開示します。</p>
+    <p class="note">※ 本表示は予告なく変更することがあります。最新情報は本ページをご確認ください。</p>
   </main>
-
-  <footer>
-    <div class="footer-main">
-      <div>
-        <span class="footer-logo">EverDNA</span>
-        <p class="footer-company">
-          運営：合同会社クボット<br>
-          お問い合わせ：<a href="mailto:info@everdna.com" style="color:var(--gray-400);text-decoration:none;">info@everdna.com</a>
-        </p>
-      </div>
-      <div class="footer-links">
-        <a class="footer-link" href="/privacy.html">プライバシーポリシー</a>
-        <a class="footer-link" href="/tokutei.html">特定商取引法に基づく表示</a>
-        <a class="footer-link" href="mailto:info@everdna.com">お問い合わせ</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      © 2026 EverDNA / 合同会社クボット All rights reserved.
-    </div>
-  </footer>
-
 </body>
 </html>
