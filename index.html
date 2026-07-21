@@ -1392,18 +1392,38 @@
       const data = getFormData();
 
       if (currentPlan === 'paid') {
-        // 有料プラン: 申込データをlocalStorageに保存し、同タブでStripeへ遷移。
-        // 決済完了後、Stripe側のリダイレクト設定で /thanks.html に戻り、
-        // thanks.html が保存データをGASへ送信してレポート生成を開始する。
+        // 有料プラン（案A）：
+        //  1) orderId を発行し、申込を決済前にGASへ一時保存（stash）。
+        //  2) Stripeへ client_reference_id=orderId を付けて遷移。
+        //  3) 決済完了イベント(checkout.session.completed)を Vercel関数(署名検証)経由でGASが受け、
+        //     orderIdで申込を照合＋決済成立を再確認してレポート生成を発火する。
+        //  → thanks.html への復帰有無に依存せず、確実に発火する。
+        const orderId = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : ('ord_' + Date.now() + '_' + Math.random().toString(36).slice(2));
+
         try {
           localStorage.setItem('everdna_pending_order', JSON.stringify({
-            data: data,
-            savedAt: Date.now(),
+            data: data, orderId: orderId, savedAt: Date.now(),
           }));
         } catch (err) {
           console.error('localStorage error:', err);
         }
-        const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email);
+
+        // 決済前に申込をGASへ一時保存（Webhookが後で照合する）。到達を待ってから遷移。
+        try {
+          await fetch(GAS_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'stash', orderId: orderId, data: data }),
+            redirect: 'follow',
+          });
+        } catch (err) {
+          console.error('stash error:', err);
+        }
+
+        let stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email)
+                      + '&client_reference_id=' + encodeURIComponent(orderId);
         window.location.href = stripeUrl;
         return;
       }
