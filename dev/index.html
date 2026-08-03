@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 検証サイト（S-1）：検索インデックス・誤課金防止 -->
+  <meta name="robots" content="noindex, nofollow" />
   <title>EverDNA — ブランドの本質を言語化する</title>
 
   <!-- GA4 計測タグ -->
@@ -1306,12 +1308,13 @@
 
   <script>
     // ─── 設定 ──────────────────────────────────────────────────────────────────
-    // ▼ GASウェブアプリのURLに差し替えてください
-    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxuv6-dLRg_iQVvkBKeAT33eemjJ9jH_mOgLHfrUGIqD10lt7JMGTDGaIGawHjnIi4xpg/exec';
+    // ▼ GASウェブアプリのURL【dev環境】
+    // 本番: AKfycbxuv6-dLRg_iQVvkBKeAT33eemjJ9jH_mOgLHfrUGIqD10lt7JMGTDGaIGawHjnIi4xpg
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbySdzC1OuZHjusYvMF7dwue1PhlHgHCXJonJbPUXehGdNq8-wMQj4xxUEMzV9HgLegb/exec';
 
-    // ▼ StripeのPayment LinkURL（本番。決済後 /thanks.html へリダイレクト設定が必要）
-    // テスト用: https://buy.stripe.com/test_5kQbJ31mJcfxccWezQcfK00
-    const STRIPE_URL = 'https://buy.stripe.com/bJe14p5Lm3miaHr9MY2ZO01';
+    // ▼ StripeのPayment LinkURL【dev＝テストモード】決済後 dev の thanks.html へリダイレクト設定が必要
+    // 本番: https://buy.stripe.com/bJe14p5Lm3miaHr9MY2ZO01
+    const STRIPE_URL = 'https://buy.stripe.com/test_7sY6oJ6H3cfx90K77ocfK01';
     // ────────────────────────────────────────────────────────────────────────────
 
     let currentPlan = 'free';
@@ -1409,11 +1412,11 @@
       };
 
       if (currentPlan === 'paid') {
-        // 有料プラン（案A）：
+        // 【dev / 案B】有料プラン：
         //  1) orderId を発行し、申込を決済前にGASへ一時保存（stash）。
         //  2) Stripeへ client_reference_id=orderId を付けて遷移。
-        //  3) 決済完了イベント(checkout.session.completed)を Vercel関数(署名検証)経由でGASが受け、
-        //     orderIdで申込を照合＋決済成立を再確認してレポート生成を発火する。
+        //  3) 決済完了イベント(checkout.session.completed)をStripe WebhookがGASへ送信し、
+        //     GASがorderIdで申込を照合＋決済成立を再確認してレポート生成を発火する。
         //  → thanks.html への復帰有無に依存せず、確実に発火する。
         const orderId = (window.crypto && crypto.randomUUID)
           ? crypto.randomUUID()
