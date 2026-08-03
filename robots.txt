@@ -1,0 +1,4 @@
+# EverDNA robots.txt
+# 検証サイト（/dev/）はクロール対象外（S-1）
+User-agent: *
+Disallow: /dev/
