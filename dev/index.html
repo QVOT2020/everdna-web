@@ -860,6 +860,8 @@
       footer { padding: 32px 24px; }
     }
   </style>
+  <!-- Cloudflare Turnstile（BOT対策 S-2） -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -1221,6 +1223,11 @@
             </div>
 
             <div class="form-submit-area">
+              <!-- Cloudflare Turnstile（BOT対策 S-2）※GAS側でトークン検証が必要 -->
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAAEE5wuggMIVp2lBT"></div>
+              <!-- ハニーポット（見えない項目。入力があればBOTとして拒否） -->
+              <input type="text" name="company_fax" tabindex="-1" autocomplete="off"
+                     style="position:absolute;left:-9999px;opacity:0;height:0;width:0" aria-hidden="true">
               <button type="submit" class="btn-submit" id="submit-btn">
                 無料で診断する →
               </button>
@@ -1299,13 +1306,12 @@
 
   <script>
     // ─── 設定 ──────────────────────────────────────────────────────────────────
-    // ▼ GASウェブアプリのURL【dev環境】
-    // 本番: AKfycbxuv6-dLRg_iQVvkBKeAT33eemjJ9jH_mOgLHfrUGIqD10lt7JMGTDGaIGawHjnIi4xpg
-    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbySdzC1OuZHjusYvMF7dwue1PhlHgHCXJonJbPUXehGdNq8-wMQj4xxUEMzV9HgLegb/exec';
+    // ▼ GASウェブアプリのURLに差し替えてください
+    const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxuv6-dLRg_iQVvkBKeAT33eemjJ9jH_mOgLHfrUGIqD10lt7JMGTDGaIGawHjnIi4xpg/exec';
 
-    // ▼ StripeのPayment LinkURL【dev＝テストモード】決済後 dev の thanks.html へリダイレクト設定が必要
-    // 本番: https://buy.stripe.com/bJe14p5Lm3miaHr9MY2ZO01
-    const STRIPE_URL = 'https://buy.stripe.com/test_7sY6oJ6H3cfx90K77ocfK01';
+    // ▼ StripeのPayment LinkURL（本番。決済後 /thanks.html へリダイレクト設定が必要）
+    // テスト用: https://buy.stripe.com/test_5kQbJ31mJcfxccWezQcfK00
+    const STRIPE_URL = 'https://buy.stripe.com/bJe14p5Lm3miaHr9MY2ZO01';
     // ────────────────────────────────────────────────────────────────────────────
 
     let currentPlan = 'free';
@@ -1386,18 +1392,28 @@
       document.getElementById('form-error-banner').style.display = 'block';
     }
 
+    // BOT対策（S-2）：フォーム表示時刻を記録（最小入力時間トラップ用）
+    window.__formShownAt = Date.now();
+
     document.getElementById('diagnosis-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       if (!validateForm()) return;
 
       const data = getFormData();
 
+      // BOT対策（S-2）：Turnstileトークン・経過時間・ハニーポットを params 直下に付与
+      const antibot = {
+        turnstileToken: document.querySelector('[name="cf-turnstile-response"]')?.value || '',
+        elapsedMs: Date.now() - (window.__formShownAt || 0),
+        hp: document.querySelector('[name="company_fax"]')?.value || '',
+      };
+
       if (currentPlan === 'paid') {
-        // 【dev / 案B】有料プラン：
+        // 有料プラン（案A）：
         //  1) orderId を発行し、申込を決済前にGASへ一時保存（stash）。
         //  2) Stripeへ client_reference_id=orderId を付けて遷移。
-        //  3) 決済完了イベント(checkout.session.completed)をStripe WebhookがGASへ送信し、
-        //     GASがorderIdで申込を照合＋決済成立を再確認してレポート生成を発火する。
+        //  3) 決済完了イベント(checkout.session.completed)を Vercel関数(署名検証)経由でGASが受け、
+        //     orderIdで申込を照合＋決済成立を再確認してレポート生成を発火する。
         //  → thanks.html への復帰有無に依存せず、確実に発火する。
         const orderId = (window.crypto && crypto.randomUUID)
           ? crypto.randomUUID()
@@ -1416,7 +1432,7 @@
           await fetch(GAS_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'stash', orderId: orderId, data: data }),
+            body: JSON.stringify({ action: 'stash', orderId: orderId, data: data, ...antibot }),
             redirect: 'follow',
           });
         } catch (err) {
@@ -1448,7 +1464,7 @@
         const resp = await fetch(GAS_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, ...antibot }),
           redirect: 'follow',
           signal: controller.signal,
         });
