@@ -860,6 +860,8 @@
       footer { padding: 32px 24px; }
     }
   </style>
+  <!-- Cloudflare Turnstile（BOT対策 S-2） -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -1221,6 +1223,11 @@
             </div>
 
             <div class="form-submit-area">
+              <!-- Cloudflare Turnstile（BOT対策 S-2）※GAS側でトークン検証が必要 -->
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAAEE5wuggMIVp2lBT"></div>
+              <!-- ハニーポット（見えない項目。入力があればBOTとして拒否） -->
+              <input type="text" name="company_fax" tabindex="-1" autocomplete="off"
+                     style="position:absolute;left:-9999px;opacity:0;height:0;width:0" aria-hidden="true">
               <button type="submit" class="btn-submit" id="submit-btn">
                 無料で診断する →
               </button>
@@ -1385,11 +1392,21 @@
       document.getElementById('form-error-banner').style.display = 'block';
     }
 
+    // BOT対策（S-2）：フォーム表示時刻を記録（最小入力時間トラップ用）
+    window.__formShownAt = Date.now();
+
     document.getElementById('diagnosis-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       if (!validateForm()) return;
 
       const data = getFormData();
+
+      // BOT対策（S-2）：Turnstileトークン・経過時間・ハニーポットを params 直下に付与
+      const antibot = {
+        turnstileToken: document.querySelector('[name="cf-turnstile-response"]')?.value || '',
+        elapsedMs: Date.now() - (window.__formShownAt || 0),
+        hp: document.querySelector('[name="company_fax"]')?.value || '',
+      };
 
       if (currentPlan === 'paid') {
         // 有料プラン（案A）：
@@ -1415,7 +1432,7 @@
           await fetch(GAS_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'stash', orderId: orderId, data: data }),
+            body: JSON.stringify({ action: 'stash', orderId: orderId, data: data, ...antibot }),
             redirect: 'follow',
           });
         } catch (err) {
@@ -1447,7 +1464,7 @@
         const resp = await fetch(GAS_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, ...antibot }),
           redirect: 'follow',
           signal: controller.signal,
         });
