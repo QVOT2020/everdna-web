@@ -1412,6 +1412,12 @@
       };
 
       if (currentPlan === 'paid') {
+        // 二重クリック防止＋即時フィードバック（UX：ボタン無反応の連打を解消）
+        if (window.__redirecting) return;
+        window.__redirecting = true;
+        const _submitBtn = document.getElementById('submit-btn');
+        if (_submitBtn) { _submitBtn.disabled = true; _submitBtn.style.opacity = '0.7'; _submitBtn.textContent = '決済ページへ移動します…'; }
+
         // 【dev / 案B】有料プラン：
         //  1) orderId を発行し、申込を決済前にGASへ一時保存（stash）。
         //  2) Stripeへ client_reference_id=orderId を付けて遷移。
@@ -1430,19 +1436,22 @@
           console.error('localStorage error:', err);
         }
 
-        // 決済前に申込をGASへ一時保存（Webhookが後で照合する）。到達を待ってから遷移。
+        // 決済前に申込をGASへ一時保存。応答は待たず keepalive でバックグラウンド送信し、
+        // すぐStripeへ遷移する（UXのタイムラグ解消）。決済完了＝Webhook発火は数十秒後なので、
+        // stashはそれ以前に確実に書き込まれる。
         try {
-          await fetch(GAS_ENDPOINT, {
+          fetch(GAS_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ action: 'stash', orderId: orderId, data: data, ...antibot }),
+            keepalive: true,
             redirect: 'follow',
           });
         } catch (err) {
           console.error('stash error:', err);
         }
 
-        let stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email)
+        const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email)
                       + '&client_reference_id=' + encodeURIComponent(orderId);
         window.location.href = stripeUrl;
         return;
