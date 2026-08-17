@@ -1181,7 +1181,7 @@
 
               <div class="form-field">
                 <label for="url">企業WebサイトURL<span class="required">*</span></label>
-                <input type="url" id="url" name="url" placeholder="https://example.com" required />
+                <input type="text" inputmode="url" id="url" name="url" placeholder="https://example.com（www.example.com でも可）" required />
                 <span class="field-error">URLを入力してください</span>
               </div>
 
@@ -1369,6 +1369,40 @@
       }
     }
 
+    // URL 正規化（S-8・フロント側）：GAS の normalizeUrl_ と同じ整形を、ユーザーに見える形で行う
+    function normalizeUrlInput(raw) {
+      if (typeof raw !== 'string') return '';
+      let u = raw
+        .replace(/[！-～]/g, function (ch) { return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+        .replace(/[\u3000\u200B\u200C\u200D\uFEFF]/g, '')
+        .trim();
+      if (!u) return '';
+      const md = u.match(/^\[[^\]]*\]\(\s*([^)\s]+)\s*\)$/);
+      if (md) u = md[1].trim();
+      u = u.replace(/^[<"'`]+/, '').replace(/[>"'`]+$/, '').trim();
+      if (!u) return '';
+      if (/^[a-z][a-z0-9+.\-]*:/i.test(u) && !/^https?:\/\//i.test(u)) return u;
+      if (!/^https?:\/\//i.test(u)) u = 'https://' + u.replace(/^\/+/, '');
+      if (!/^https?:\/\/[^\/:?#]/.test(u)) return '';
+      return u.replace(/[.,;:、。]+$/, '');
+    }
+
+    // 正規化後のホストが妥当か（GAS の isSafeUrl_ と同じ判定を軽量に再現）
+    function isUrlAcceptable(raw) {
+      const u = normalizeUrlInput(raw);
+      if (!/^https?:\/\//i.test(u)) return false;
+      const m = u.match(/^https?:\/\/([^\/:?#]+)/i);
+      const host = m ? m[1].toLowerCase() : '';
+      if (!host) return false;
+      if (/[\s\[\]()<>"'`,{}|\\^]/.test(host)) return false;
+      if (host.indexOf('.') < 0) return false;
+      if (/^[.\-]|[.\-]$/.test(host)) return false;
+      // サーバ側 isSafeUrl_ と同じ拒否条件（送信前に気づけるようにするため。防御の本体はGAS側）
+      if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.)/i.test(host)) return false;
+      if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) return false;
+      return true;
+    }
+
     function validateForm() {
       let valid = true;
       const fields = ['company', 'url', 'industry', 'size', 'strengths', 'contact-name', 'email'];
@@ -1384,6 +1418,13 @@
           el.classList.remove('error');
         }
       });
+      // URL 形式チェック（空チェックは上のループ済み）
+      const urlEl = document.getElementById('url');
+      if (urlEl && urlEl.value.trim() && !isUrlAcceptable(urlEl.value)) {
+        urlEl.classList.add('error');
+        valid = false;
+      }
+
       const consent = document.getElementById('consent');
       if (!consent.checked) {
         consent.style.outline = '2px solid var(--error)';
@@ -1398,7 +1439,7 @@
       const f = document.getElementById('diagnosis-form');
       return {
         company:     f.company.value.trim(),
-        url:         f.url.value.trim(),
+        url:         normalizeUrlInput(f.url.value),
         industry:    f.industry.value,
         size:        f.size.value,
         strengths:   f.strengths.value.trim(),
@@ -1428,6 +1469,17 @@
       document.getElementById('form-body').style.display = 'block';
       document.getElementById('form-error-banner').style.display = 'block';
     }
+
+    // S-8：入力欄を離れた時点で正規化を反映し、補完結果をユーザーに見せる
+    (function () {
+      const urlEl = document.getElementById('url');
+      if (!urlEl) return;
+      urlEl.addEventListener('blur', function () {
+        const n = normalizeUrlInput(urlEl.value);
+        if (n && n !== urlEl.value) urlEl.value = n;
+        if (urlEl.value.trim() && isUrlAcceptable(urlEl.value)) urlEl.classList.remove('error');
+      });
+    })();
 
     // BOT対策（S-2）：フォーム表示時刻を記録（最小入力時間トラップ用）
     window.__formShownAt = Date.now();
