@@ -1,11 +1,57 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- 検証サイト（S-1）：検索インデックス・誤課金防止 -->
   <meta name="robots" content="noindex, nofollow" />
   <title>EverDNA — ブランドの本質を言語化する</title>
+
+<!-- ============================================================
+  EverDNA S-5（dev用）: meta description / OGP / Twitter Card / favicon
+  /dev/index.html の <head> 内、既存の <title>（または noindex メタ）付近に貼り付け。
+
+  ★ 画像パスは本番と同一の「絶対パス（/...）」です。
+     ページが /dev/ 配下にあっても、/og-image.jpg は常に
+     https://everdna.com/og-image.jpg（ルート）を指すため、
+     ルートに置いた1セットの画像を本番・devで共有できます。
+     ※ 相対パス（og-image.jpg / ./og-image.jpg）にすると
+       /dev/og-image.jpg を探して404になるので使わないこと。
+
+  ★ dev は noindex（S-1）のため、og:url は本番URL(https://everdna.com/)のまま。
+     dev固有URLを広告しない＝canonical 方針と整合させています。
+     （dev の noindex メタ・X-Robots-Tag・canonical は既存のまま残す）
+============================================================ -->
+
+<!-- 基本SEO（devはnoindexのため description は主にタブ/共有時の補助用途） -->
+<meta name="description" content="EverDNAは、企業のブランドの本質をAIが分析し言語化するブランドDNA診断サービス。強み・価値観・ブランドパーソナリティを可視化し、採用・広報・マーケティングで使えるレポートをお届けします。無料サマリー診断はこちら。" />
+<meta name="theme-color" content="#111111" />
+
+<!-- Open Graph（og:url は本番URLで固定＝dev URLを広告しない） -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="EverDNA" />
+<meta property="og:title" content="EverDNA — ブランドの本質を言語化する" />
+<meta property="og:description" content="企業のブランドの本質をAIが分析し言語化するブランドDNA診断。強み・価値観・パーソナリティを可視化します。" />
+<meta property="og:url" content="https://everdna.com/" />
+<meta property="og:image" content="https://everdna.com/og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="ja_JP" />
+
+<!-- Twitter (X) Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="EverDNA — ブランドの本質を言語化する" />
+<meta name="twitter:description" content="企業のブランドの本質をAIが分析し言語化するブランドDNA診断。強み・価値観・パーソナリティを可視化します。" />
+<meta name="twitter:image" content="https://everdna.com/og-image.jpg" />
+
+<!-- favicon / アプリアイコン（すべて絶対パス。本番と同一・ルート配置を共有） -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7f7b0fd8732c4326aae4b9d58d5c514a"}' crossorigin="anonymous"></script>
 
   <!-- GA4 計測タグ -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-J80MJ9M5C4"></script>
