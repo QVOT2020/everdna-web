@@ -1175,7 +1175,7 @@
 
         <!-- Error banner -->
         <div class="form-error-banner" id="form-error-banner">
-          送信エラーが発生しました。しばらく時間をおいて再度お試しください。
+          <span id="form-error-text">送信エラーが発生しました。しばらく時間をおいて再度お試しください。</span>
         </div>
 
         <!-- Form body -->
@@ -1476,9 +1476,11 @@
       document.getElementById('success-email').textContent = email;
     }
 
-    function showFormError() {
+    function showFormError(message) {
       document.getElementById('form-loading').style.display = 'none';
       document.getElementById('form-body').style.display = 'block';
+      document.getElementById('form-error-text').textContent =
+        message || '送信エラーが発生しました。しばらく時間をおいて再度お試しください。';
       document.getElementById('form-error-banner').style.display = 'block';
     }
 
@@ -1578,8 +1580,26 @@
           redirect: 'follow',
           signal: controller.signal,
         });
-        // GASは200・302どちらも正常応答とみなす
+        // GASは200・302どちらも正常応答とみなす（HTTPステータスだけでは成否を判定できない）
         if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
+
+        // S-4：送信成否のサーバ側担保。
+        // Apps ScriptへのPOSTはCORS越しに302→200へ正規化されるため resp.ok は「受付できたか」の
+        // 判定に使えない（securityGuard_ 拒否や必須項目不足でもHTTPステータス自体は200で返る）。
+        // 必ずJSON本文の success フィールドを見て、サーバが実際にキュー投入したかを判定する。
+        let body = null;
+        try {
+          body = await resp.json();
+        } catch (parseErr) {
+          throw new Error('invalid response body');
+        }
+        if (!body || body.success !== true) {
+          const msg = (body && typeof body.error === 'string' && body.error && body.error.length < 200)
+            ? body.error : undefined;
+          console.error('doPost rejected:', body);
+          showFormError(msg);
+          return;
+        }
         showSuccess(data.email);
       } catch (err) {
         console.error(err);
