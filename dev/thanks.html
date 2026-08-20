@@ -11,7 +11,7 @@
   <!-- Vercel Speed Insights -->
   <script type="module">
     import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights@2.0.0';
-    injectSpeedInsights();
+    injectSpeedInsights({ route: window.location.pathname });
   </script>
 
   <!-- GA4 計測タグ -->
