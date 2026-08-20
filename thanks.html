@@ -8,6 +8,12 @@
   <meta name="theme-color" content="#ffffff" />
   <title>決済完了 — EverDNA</title>
 
+  <!-- Vercel Speed Insights -->
+  <script type="module">
+    import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights@2.0.0';
+    injectSpeedInsights();
+  </script>
+
   <!-- GA4 計測タグ -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-J80MJ9M5C4"></script>
   <script>
@@ -345,7 +351,7 @@
     function showState(id) {
       document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      // 状態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
+      // ���態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
       const h = document.querySelector('#' + id + ' h1');
       if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     }
