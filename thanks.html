@@ -11,7 +11,7 @@
   <!-- Vercel Speed Insights -->
   <script type="module">
     import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights@2.0.0';
-    injectSpeedInsights();
+    injectSpeedInsights({ route: window.location.pathname });
   </script>
 
   <!-- GA4 計測タグ -->
@@ -351,7 +351,7 @@
     function showState(id) {
       document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      // ���態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
+      //    態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
       const h = document.querySelector('#' + id + ' h1');
       if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     }

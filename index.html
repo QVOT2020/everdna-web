@@ -46,7 +46,7 @@
   <!-- Vercel Speed Insights -->
   <script type="module">
     import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights@2.0.0';
-    injectSpeedInsights();
+    injectSpeedInsights({ route: window.location.pathname });
   </script>
 
   <!-- GA4 計測タグ -->
@@ -1403,7 +1403,7 @@
       if (/[\s\[\]()<>"'`,{}|\\^]/.test(host)) return false;
       if (host.indexOf('.') < 0) return false;
       if (/^[.\-]|[.\-]$/.test(host)) return false;
-      // サーバ側 isSafeUrl_ と同じ拒否条件（送信前に気づけるようにするた���。防御の本体はGAS側）
+      // サーバ側 isSafeUrl_ と同じ拒否条件（送信前に気づけるようにするた   。防御の本体はGAS側）
       if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.)/i.test(host)) return false;
       if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) return false;
       return true;
