@@ -941,7 +941,7 @@
           言語で<span class="accent">可視化</span>する。
         </h1>
         <p class="hero-desc">
-          企業URLを入力するだけで、AIがブランドの価値観・トーン・
+          企業名・URL・業種などを入力するだけで、AIがブランドの価値観・トーン・
           ポジショニングを分析。「自社らしさ」を言葉にするための
           ブランドDNAレポートをお届けします。
         </p>
@@ -1027,8 +1027,9 @@
           <p class="step-number">Step 02</p>
           <h3 class="step-title">AIが分析</h3>
           <p class="step-desc">
-            AIがWebサイトの内容・言葉・構造を読み込み、
-            ブランドのDNAを多角的に分析します。
+            入力内容をもとに、AIがブランドのDNAを分析します。
+            フルレポートでは、AIがWebサイトの内容や言葉づかいも読み込んで分析に反映します。
+            サイトの仕様や設定によっては読み込めない場合があり、その場合はお申し込み前にお知らせします。
           </p>
         </div>
 
@@ -1073,7 +1074,7 @@
 
         <p class="sample-section-title">2. コアバリュー</p>
         <ul class="sample-values">
-          <li><strong>シンプリシティ</strong>：複雑な技術を誰でも使え  かたちに翻訳する</li>
+          <li><strong>シンプリシティ</strong>：複雑な技術を誰でも使えるかたちに翻訳する</li>
           <li><strong>誠実さ</strong>：誇張のない言葉で、正直に価値を届ける</li>
           <li><strong>共創</strong>：顧客とともに課題を定義し、一緒に解決策をつくる</li>
         </ul>
@@ -1295,8 +1296,8 @@
         <!-- Loading state -->
         <div class="form-loading" id="form-loading">
           <div class="spinner"></div>
-          <p class="loading-text">送信しています...</p>
-          <p class="loading-sub">数秒お待ちください</p>
+          <p class="loading-text" id="loading-text">送信しています...</p>
+          <p class="loading-sub" id="loading-sub">数秒お待ちください</p>
           <p class="loading-sub" id="loading-slow-note" style="display:none;">
             通信状況により少し時間がかかることがあります。そのままお待ちください。
           </p>
@@ -1380,7 +1381,7 @@
       const note = document.getElementById('form-note');
       if (plan === 'paid') {
         btn.textContent = 'フルレポートを取得する（¥1,980）→';
-        note.textContent = '決済画面（Stripe）へ移動します。支払い完了後、自動でレポートをお送りします。';
+        note.textContent = 'Webサイトを読み込めるか確認したうえで、決済画面（Stripe）へ移動します。支払い完了後、自動でレポートをお送りします。';
       } else {
         btn.textContent = '無料で診断する →';
         note.textContent = '登録不要。メールのみで診断レポートをお届けします。';
@@ -1470,11 +1471,25 @@
       };
     }
 
-    function showLoading() {
+    function showLoading(text, sub) {
       document.getElementById('form-body').style.display = 'none';
       document.getElementById('form-loading').style.display = 'block';
       document.getElementById('form-error-banner').style.display = 'none';
+      const t = document.getElementById('loading-text');
+      const s = document.getElementById('loading-sub');
+      if (t) t.textContent = text || '送信しています...';
+      if (s) s.textContent = sub || '数秒お待ちください';
     }
+
+    // Turnstile のトークンは1回しか使えないため、送信が成功しなかったら再発行する（S-9：有料の再試行で必要）
+    function resetTurnstile() {
+      try { if (window.turnstile && typeof window.turnstile.reset === 'function') window.turnstile.reset(); }
+      catch (err) { console.error('turnstile reset error:', err); }
+    }
+
+    // S-9：有料の事前判定で読めなかった回数（このページを開いている間）
+    const PAID_PRECHECK_MAX_ATTEMPTS = 3;
+    let paidPrecheckFailures = 0;
 
     function showSuccess(email) {
       document.getElementById('form-loading').style.display = 'none';
@@ -1518,22 +1533,78 @@
       };
 
       if (currentPlan === 'paid') {
-        // 二重クリック防止＋即時フィードバック（UX：ボタン無反応の連打を解消）
+        // 二重クリック防止
         if (window.__redirecting) return;
         window.__redirecting = true;
-        const _submitBtn = document.getElementById('submit-btn');
-        if (_submitBtn) { _submitBtn.disabled = true; _submitBtn.style.opacity = '0.7'; _submitBtn.textContent = '決済ページへ移動します…'; }
 
-        // 【dev / 案B】有料プラン：
-        //  1) orderId を発行し、申込を決済前にGASへ一時保存（stash）。
-        //  2) Stripeへ client_reference_id=orderId を付けて遷移。
-        //  3) 決済完了イベント(checkout.session.completed)をStripe WebhookがGASへ送信し、
-        //     GASがorderIdで申込を照合＋決済成立を再確認してレポート生成を発火する。
-        //  → thanks.html への復帰有無に依存せず、確実に発火する。
+        // S-9（2026-10-21）有料プラン：
+        //  1) 決済前に stash（precheck:true）を送り、GAS がWebサイトを読めるか判定するのを待つ。
+        //     読めた場合だけ GAS が本文を保存し readable:true を返す → Stripe へ遷移。
+        //  2) 読めなければ購入を止め、会社概要ページなど別のURLの入力を促す（最大3回）。
+        //     3回とも読めなければ無料サマリーへ案内する（10/16・10/21 ユーザー決定）。
+        //  3) 決済完了は従来どおり Stripe Webhook → Vercel 署名検証 → GAS が orderId で照合して生成。
+        //  ※ Turnstile トークンは1回限りなので、判定と stash は同じ1回の送信にまとめている。
         const orderId = (window.crypto && crypto.randomUUID)
           ? crypto.randomUUID()
           : ('ord_' + Date.now() + '_' + Math.random().toString(36).slice(2));
 
+        showLoading('Webサイトを確認しています...', '読み込めるかを確認しています。通常10〜20秒ほどかかります。');
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 90000);   // 判定は再試行込みで最大60秒程度
+
+        let body = null;
+        try {
+          const resp = await fetch(GAS_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'stash', precheck: true, orderId: orderId, data: data, ...antibot }),
+            redirect: 'follow',
+            signal: controller.signal,
+          });
+          if (!resp.ok && resp.status >= 500) throw new Error('HTTP ' + resp.status);
+          try { body = await resp.json(); } catch (parseErr) { throw new Error('invalid response body'); }
+        } catch (err) {
+          console.error(err);
+          window.__redirecting = false;
+          resetTurnstile();
+          showFormError();
+          return;
+        } finally {
+          clearTimeout(timeout);
+        }
+
+        // サーバが受け付けなかった（BOT判定・上限・判定中のエラー等）
+        if (!body || body.success !== true) {
+          const msg = (body && typeof body.error === 'string' && body.error && body.error.length < 200)
+            ? body.error : undefined;
+          console.error('stash rejected:', body);
+          window.__redirecting = false;
+          resetTurnstile();
+          showFormError(msg);
+          return;
+        }
+
+        // 読めなかった：購入を止める
+        if (body.readable !== true) {
+          paidPrecheckFailures++;
+          window.__redirecting = false;
+          resetTurnstile();
+          if (paidPrecheckFailures >= PAID_PRECHECK_MAX_ATTEMPTS) {
+            selectPlan('free');
+            showFormError('このWebサイトは読み込めなかったため、フルレポートはお申し込みいただけません。お手数ですが、無料サマリーをご利用ください（ご記入内容のみに基づくサマリーをお届けします）。');
+            return;
+          }
+          const left = PAID_PRECHECK_MAX_ATTEMPTS - paidPrecheckFailures;
+          const lead = body.retryable
+            ? 'Webサイトを読み込めませんでした（一時的な要因の可能性があります）。時間をおいて再度お試しいただくか、'
+            : 'サイトの仕様や設定により、Webサイトを読み込めませんでした。';
+          showFormError(lead + '会社概要ページなど、別のURLをご入力のうえ再度お試しください（あと' + left + '回）。');
+          const urlEl = document.getElementById('url');
+          if (urlEl) { urlEl.classList.add('error'); if (typeof urlEl.focus === 'function') urlEl.focus(); }
+          return;
+        }
+
+        // 読めた：Stripe へ
         try {
           localStorage.setItem('everdna_pending_order', JSON.stringify({
             data: data, orderId: orderId, savedAt: Date.now(),
@@ -1541,22 +1612,7 @@
         } catch (err) {
           console.error('localStorage error:', err);
         }
-
-        // 決済前に申込をGASへ一時保存。応答は待たず keepalive でバックグラウンド送信し、
-        // すぐStripeへ遷移する（UXのタイムラグ解消）。決済完了＝Webhook発火は数十秒後なので、
-        // stashはそれ以前に確実に書き込まれる。
-        try {
-          fetch(GAS_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'stash', orderId: orderId, data: data, ...antibot }),
-            keepalive: true,
-            redirect: 'follow',
-          });
-        } catch (err) {
-          console.error('stash error:', err);
-        }
-
+        showLoading('決済ページへ移動しています...', 'Webサイトを確認できました。');
         const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email)
                       + '&client_reference_id=' + encodeURIComponent(orderId);
         window.location.href = stripeUrl;
