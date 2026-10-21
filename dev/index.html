@@ -796,23 +796,26 @@
     }
 
     /* ─── BOTTOM CTA ─── */
+    /* 2026-10-21：高さを従来の約半分に圧縮（申込フォームの確認表示・エラー表示が下から見えるように） */
     .cta-section {
       background: var(--black);
       text-align: center;
+      padding-top: 48px;
+      padding-bottom: 48px;
     }
-    .cta-section .section-label { color: var(--gray-400); }
+    .cta-section .section-label { color: var(--gray-400); margin-bottom: 10px; }
     .cta-title {
-      font-size: clamp(28px, 4vw, 52px);
+      font-size: clamp(22px, 2.6vw, 34px);
       font-weight: 300;
       color: var(--white);
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .cta-title strong { font-weight: 700; }
     .cta-desc {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--gray-400);
-      margin-bottom: 44px;
-      max-width: 480px;
+      margin-bottom: 24px;
+      max-width: 640px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -908,7 +911,10 @@
       .plan-toggle { flex-direction: column; }
       .step:not(:last-child)::after { display: none; }
       .sample-card { padding: 28px 24px; }
-      .cta-buttons { flex-direction: column; align-items: stretch; text-align: center; }
+      .cta-buttons { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; }
+      .cta-buttons .btn-white, .cta-buttons .btn-outline-white { padding: 12px 18px; font-size: 13px; }
+      .cta-section { padding-top: 28px; padding-bottom: 28px; }
+      .cta-desc { font-size: 14px; margin-bottom: 16px; }
       .footer-main { flex-direction: column; gap: 20px; }
       .footer-links { flex-wrap: wrap; gap: 16px; }
       footer { padding: 32px 24px; }
@@ -1326,7 +1332,7 @@
   <section class="cta-section">
     <div class="section-inner">
       <p class="section-label">Get Started</p>
-      <h2 class="cta-title">あなたの企業の<strong>DNAを</strong><br>知ってみませんか？</h2>
+      <h2 class="cta-title">あなたの企業の<strong>DNAを</strong>知ってみませんか？</h2>
       <p class="cta-desc">
         まずは無料診断から。サマリーレポートで
         「自社らしさ」の輪郭を確認してください。
@@ -1479,6 +1485,15 @@
       const s = document.getElementById('loading-sub');
       if (t) t.textContent = text || '送信しています...';
       if (s) s.textContent = sub || '数秒お待ちください';
+      scrollIntoViewSafe('form-loading');
+    }
+
+    // 送信ボタンはフォームの下端にあるため、表示が切り替わったら確認表示・エラー表示まで画面を戻す（2026-10-21）
+    function scrollIntoViewSafe(id) {
+      try {
+        const el = document.getElementById(id);
+        if (el && typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err) { /* 表示位置の調整に失敗しても処理は続ける */ }
     }
 
     // Turnstile のトークンは1回しか使えないため、送信が成功しなかったら再発行する（S-9：有料の再試行で必要）
@@ -1495,6 +1510,7 @@
       document.getElementById('form-loading').style.display = 'none';
       document.getElementById('form-success').style.display = 'block';
       document.getElementById('success-email').textContent = email;
+      scrollIntoViewSafe('form-success');
     }
 
     function showFormError(message) {
@@ -1503,6 +1519,7 @@
       document.getElementById('form-error-text').textContent =
         message || '送信エラーが発生しました。しばらく時間をおいて再度お試しください。';
       document.getElementById('form-error-banner').style.display = 'block';
+      scrollIntoViewSafe('form-error-banner');
     }
 
     // S-8：入力欄を離れた時点で正規化を反映し、補完結果をユーザーに見せる
