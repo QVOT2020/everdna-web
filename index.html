@@ -1195,7 +1195,7 @@
               <div class="form-field">
                 <label for="url">企業WebサイトURL<span class="required">*</span></label>
                 <input type="text" inputmode="url" id="url" name="url" placeholder="https://example.com（www.example.com でも可）" required />
-                <span class="field-error">URLを入力してください</span>
+                <span class="field-error" id="url-error">URLを入力してください</span>
               </div>
 
               <div class="form-field">
@@ -1366,6 +1366,39 @@
 
     let currentPlan = 'free';
 
+    // ── GA4 ファネル計測（2026-10-22）────────────────────────────────
+    //  ・個人情報（メール・会社名・URL・自由記述）は送らない（Google の規約で禁止）。送るのはプラン・結果・理由コードのみ。
+    //  ・申込件数・売上の正は orders_queue（シート）。GA4 は「どこで離脱しているか」を見るためのもの。
+    const GA_ITEM = { item_id: 'full_report', item_name: 'フルレポート', price: 1980, quantity: 1 };
+    function track(name, params) {
+      try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (_) {}
+    }
+    // ページ遷移の直前に送るイベント用：送信完了（または 1.2 秒）を待ってから next() を呼ぶ
+    function trackThen(name, params, next) {
+      let done = false;
+      const go = function () { if (!done) { done = true; next(); } };
+      if (typeof gtag !== 'function') { go(); return; }
+      try {
+        gtag('event', name, Object.assign({}, params || {}, { event_callback: go, event_timeout: 1200 }));
+      } catch (_) { go(); return; }
+      setTimeout(go, 1500);
+    }
+    // 診断フォームへの最初の入力（1回だけ）
+    (function () {
+      const form = document.getElementById('diagnosis-form');
+      if (!form) return;
+      let started = false;
+      const onStart = function (e) {
+        if (started) return;
+        if (e && e.target && e.target.name === 'company_fax') return;   // ハニーポットは数えない
+        started = true;
+        // 名前は form_start にしない：GA4 の拡張計測（フォームの操作）が同名の form_start を自動送信し、二重計上になるため（10/22 DebugView で確認）
+        track('diagnosis_form_start', { plan: currentPlan });
+      };
+      form.addEventListener('focusin', onStart);
+      form.addEventListener('input', onStart);
+    })();
+
     function selectPlan(plan) {
       currentPlan = plan;
       document.getElementById('toggle-free').classList.toggle('active', plan === 'free');
@@ -1416,6 +1449,12 @@
       return true;
     }
 
+    // URL欄の下の注意文（2026-10-22）：入力済みなのに「URLを入力してください」と出ていたため、状況に合わせて文言を変える
+    function setUrlError(msg) {
+      const el = document.getElementById('url-error');
+      if (el) el.textContent = msg;
+    }
+
     function validateForm() {
       let valid = true;
       const fields = ['company', 'url', 'industry', 'size', 'strengths', 'contact-name', 'email'];
@@ -1433,8 +1472,10 @@
       });
       // URL 形式チェック（空チェックは上のループ済み）
       const urlEl = document.getElementById('url');
+      setUrlError('URLを入力してください');
       if (urlEl && urlEl.value.trim() && !isUrlAcceptable(urlEl.value)) {
         urlEl.classList.add('error');
+        setUrlError('URLの形式をご確認ください（例：www.example.com）');
         valid = false;
       }
 
@@ -1573,6 +1614,7 @@
           window.__redirecting = false;
           resetTurnstile();
           showFormError();
+          track('submit_error', { plan: 'paid', reason: 'network' });
           return;
         } finally {
           clearTimeout(timeout);
@@ -1586,12 +1628,15 @@
           window.__redirecting = false;
           resetTurnstile();
           showFormError(msg);
+          track('submit_error', { plan: 'paid', reason: (body && body.reason) || 'rejected' });
           return;
         }
 
         // 読めなかった：購入を止める
         if (body.readable !== true) {
           paidPrecheckFailures++;
+          track('precheck_result', { result: 'unreadable', attempt: paidPrecheckFailures,
+                                     reason: body.reason || '', exhausted: paidPrecheckFailures >= PAID_PRECHECK_MAX_ATTEMPTS });
           window.__redirecting = false;
           resetTurnstile();
           if (paidPrecheckFailures >= PAID_PRECHECK_MAX_ATTEMPTS) {
@@ -1605,6 +1650,7 @@
             : 'サイトの仕様や設定により、Webサイトを読み込めませんでした。';
           showFormError(lead + '会社概要ページなど、別のURLをご入力のうえ再度お試しください（あと' + left + '回）。');
           const urlEl = document.getElementById('url');
+          setUrlError('このURLは読み込めませんでした。別のURLをご入力ください');
           if (urlEl) { urlEl.classList.add('error'); if (typeof urlEl.focus === 'function') urlEl.focus(); }
           return;
         }
@@ -1620,7 +1666,10 @@
         showLoading('決済ページへ移動しています...', 'Webサイトを確認できました。');
         const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email)
                       + '&client_reference_id=' + encodeURIComponent(orderId);
-        window.location.href = stripeUrl;
+        track('precheck_result', { result: 'readable', attempt: paidPrecheckFailures + 1 });
+        trackThen('begin_checkout', { currency: 'JPY', value: 1980, items: [GA_ITEM] }, function () {
+          window.location.href = stripeUrl;
+        });
         return;
       }
 
@@ -1665,12 +1714,15 @@
             ? body.error : undefined;
           console.error('doPost rejected:', body);
           showFormError(msg);
+          track('submit_error', { plan: 'free', reason: (body && body.reason) || 'rejected' });
           return;
         }
         showSuccess(data.email);
+        track('free_submit', { plan: 'free' });
       } catch (err) {
         console.error(err);
         showFormError();
+        track('submit_error', { plan: 'free', reason: 'network' });
       } finally {
         clearTimeout(timeout);
         clearTimeout(slowTimer);
