@@ -351,7 +351,7 @@
     function showState(id) {
       document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      //    態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
+      // 状態変化後、見出しにフォーカスを移す（キーボード／スクリーンリーダー対応）
       const h = document.querySelector('#' + id + ' h1');
       if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     }
@@ -366,6 +366,7 @@
           localStorage.removeItem(STORAGE_KEY);
           return null;
         }
+        window.__pendingOrderId = saved.orderId || '';   // GA4 purchase の transaction_id（重複計上の防止）用
         return saved.data;
       } catch (_) {
         return null;
@@ -389,6 +390,16 @@
       if (note) note.textContent = '送信先：' + data.email;
       showState('state-success');
       try { gtag('event', 'purchase_report_requested', { plan: 'paid' }); } catch (_) {}
+      // GA4 推奨イベント purchase（2026-10-22）。申込データがある＝この端末から申し込んだ決済のときだけ送る。
+      //  ・transaction_id に orderId を入れる（同じ注文の重複計上を GA4 側で防ぐ）。個人情報は送らない。
+      //  ・別端末で決済した等で申込データが無い場合は送らない（売上の正は orders_queue）。
+      try {
+        gtag('event', 'purchase', {
+          transaction_id: window.__pendingOrderId || undefined,
+          currency: 'JPY', value: 1980,
+          items: [{ item_id: 'full_report', item_name: 'フルレポート', price: 1980, quantity: 1 }],
+        });
+      } catch (_) {}
     }
 
     submitOrder();
