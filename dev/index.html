@@ -1206,7 +1206,7 @@
               <div class="form-field">
                 <label for="url">企業WebサイトURL<span class="required">*</span></label>
                 <input type="text" inputmode="url" id="url" name="url" placeholder="https://example.com（www.example.com でも可）" required />
-                <span class="field-error">URLを入力してください</span>
+                <span class="field-error" id="url-error">URLを入力してください</span>
               </div>
 
               <div class="form-field">
@@ -1396,7 +1396,7 @@
       } catch (_) { go(); return; }
       setTimeout(go, 1500);
     }
-    // フォームへの最初の入力（1回だけ）
+    // 診断フォームへの最初の入力（1回だけ）
     (function () {
       const form = document.getElementById('diagnosis-form');
       if (!form) return;
@@ -1405,7 +1405,8 @@
         if (started) return;
         if (e && e.target && e.target.name === 'company_fax') return;   // ハニーポットは数えない
         started = true;
-        track('form_start', { plan: currentPlan });
+        // 名前は form_start にしない：GA4 の拡張計測（フォームの操作）が同名の form_start を自動送信し、二重計上になるため（10/22 DebugView で確認）
+        track('diagnosis_form_start', { plan: currentPlan });
       };
       form.addEventListener('focusin', onStart);
       form.addEventListener('input', onStart);
@@ -1461,6 +1462,12 @@
       return true;
     }
 
+    // URL欄の下の注意文（2026-10-22）：入力済みなのに「URLを入力してください」と出ていたため、状況に合わせて文言を変える
+    function setUrlError(msg) {
+      const el = document.getElementById('url-error');
+      if (el) el.textContent = msg;
+    }
+
     function validateForm() {
       let valid = true;
       const fields = ['company', 'url', 'industry', 'size', 'strengths', 'contact-name', 'email'];
@@ -1478,8 +1485,10 @@
       });
       // URL 形式チェック（空チェックは上のループ済み）
       const urlEl = document.getElementById('url');
+      setUrlError('URLを入力してください');
       if (urlEl && urlEl.value.trim() && !isUrlAcceptable(urlEl.value)) {
         urlEl.classList.add('error');
+        setUrlError('URLの形式をご確認ください（例：www.example.com）');
         valid = false;
       }
 
@@ -1654,6 +1663,7 @@
             : 'サイトの仕様や設定により、Webサイトを読み込めませんでした。';
           showFormError(lead + '会社概要ページなど、別のURLをご入力のうえ再度お試しください（あと' + left + '回）。');
           const urlEl = document.getElementById('url');
+          setUrlError('このURLは読み込めませんでした。別のURLをご入力ください');
           if (urlEl) { urlEl.classList.add('error'); if (typeof urlEl.focus === 'function') urlEl.focus(); }
           return;
         }
