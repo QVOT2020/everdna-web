@@ -65,7 +65,8 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-J80MJ9M5C4');
+    // dev：debug_mode を付ける → GA4 の「デベロッパー トラフィック」フィルタで通常レポートから除外し、DebugView でだけ見る（2026-10-22）
+    gtag('config', 'G-J80MJ9M5C4', { debug_mode: true });
   </script>
 
   <style>
@@ -1378,6 +1379,38 @@
 
     let currentPlan = 'free';
 
+    // ── GA4 ファネル計測（2026-10-22）────────────────────────────────
+    //  ・個人情報（メール・会社名・URL・自由記述）は送らない（Google の規約で禁止）。送るのはプラン・結果・理由コードのみ。
+    //  ・申込件数・売上の正は orders_queue（シート）。GA4 は「どこで離脱しているか」を見るためのもの。
+    const GA_ITEM = { item_id: 'full_report', item_name: 'フルレポート', price: 1980, quantity: 1 };
+    function track(name, params) {
+      try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (_) {}
+    }
+    // ページ遷移の直前に送るイベント用：送信完了（または 1.2 秒）を待ってから next() を呼ぶ
+    function trackThen(name, params, next) {
+      let done = false;
+      const go = function () { if (!done) { done = true; next(); } };
+      if (typeof gtag !== 'function') { go(); return; }
+      try {
+        gtag('event', name, Object.assign({}, params || {}, { event_callback: go, event_timeout: 1200 }));
+      } catch (_) { go(); return; }
+      setTimeout(go, 1500);
+    }
+    // フォームへの最初の入力（1回だけ）
+    (function () {
+      const form = document.getElementById('diagnosis-form');
+      if (!form) return;
+      let started = false;
+      const onStart = function (e) {
+        if (started) return;
+        if (e && e.target && e.target.name === 'company_fax') return;   // ハニーポットは数えない
+        started = true;
+        track('form_start', { plan: currentPlan });
+      };
+      form.addEventListener('focusin', onStart);
+      form.addEventListener('input', onStart);
+    })();
+
     function selectPlan(plan) {
       currentPlan = plan;
       document.getElementById('toggle-free').classList.toggle('active', plan === 'free');
@@ -1585,6 +1618,7 @@
           window.__redirecting = false;
           resetTurnstile();
           showFormError();
+          track('submit_error', { plan: 'paid', reason: 'network' });
           return;
         } finally {
           clearTimeout(timeout);
@@ -1598,12 +1632,15 @@
           window.__redirecting = false;
           resetTurnstile();
           showFormError(msg);
+          track('submit_error', { plan: 'paid', reason: (body && body.reason) || 'rejected' });
           return;
         }
 
         // 読めなかった：購入を止める
         if (body.readable !== true) {
           paidPrecheckFailures++;
+          track('precheck_result', { result: 'unreadable', attempt: paidPrecheckFailures,
+                                     reason: body.reason || '', exhausted: paidPrecheckFailures >= PAID_PRECHECK_MAX_ATTEMPTS });
           window.__redirecting = false;
           resetTurnstile();
           if (paidPrecheckFailures >= PAID_PRECHECK_MAX_ATTEMPTS) {
@@ -1632,7 +1669,10 @@
         showLoading('決済ページへ移動しています...', 'Webサイトを確認できました。');
         const stripeUrl = STRIPE_URL + '?prefilled_email=' + encodeURIComponent(data.email)
                       + '&client_reference_id=' + encodeURIComponent(orderId);
-        window.location.href = stripeUrl;
+        track('precheck_result', { result: 'readable', attempt: paidPrecheckFailures + 1 });
+        trackThen('begin_checkout', { currency: 'JPY', value: 1980, items: [GA_ITEM] }, function () {
+          window.location.href = stripeUrl;
+        });
         return;
       }
 
@@ -1677,12 +1717,15 @@
             ? body.error : undefined;
           console.error('doPost rejected:', body);
           showFormError(msg);
+          track('submit_error', { plan: 'free', reason: (body && body.reason) || 'rejected' });
           return;
         }
         showSuccess(data.email);
+        track('free_submit', { plan: 'free' });
       } catch (err) {
         console.error(err);
         showFormError();
+        track('submit_error', { plan: 'free', reason: 'network' });
       } finally {
         clearTimeout(timeout);
         clearTimeout(slowTimer);
