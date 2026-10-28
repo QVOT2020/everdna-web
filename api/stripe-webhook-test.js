@@ -23,6 +23,23 @@ async function readRawBody(req) {
   return Buffer.concat(chunks);
 }
 
+// GAS の応答が「本当に受け付けた」ものかを判定する（2026-10-28 追加）
+//   以前は 500 番台だけを失敗扱いにしていたため、アーカイブ済み /exec の 404 や、
+//   HTML のエラーページ、GAS 内部の例外でも Stripe に 200 を返し、取りこぼしに気づけなかった。
+//   失敗なら理由（短い文字列）、成功なら null を返す。理由に個人情報は含めない。
+async function gasForwardProblem(resp) {
+  if (!resp.ok) return 'HTTP ' + resp.status;
+  const text = await resp.text();
+  let body;
+  try { body = JSON.parse(text); } catch (_) { return 'non-JSON response (HTTP ' + resp.status + ')'; }
+  if (!body || typeof body !== 'object') return 'unexpected body';
+  if (body.ignored === 'bad_proxy_secret') return 'bad_proxy_secret';
+  if (body.success === false) return 'gas_error: ' + (body.reason || 'unknown');
+  if (body.error) return 'gas_error';
+  if (body.received !== true) return 'unexpected body';
+  return null;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -86,7 +103,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({ proxySecret: PROXY_SECRET, event }),
       redirect: 'follow', // GASは302→200を返すので、リダイレクトを追って最終200を受ける
     });
-    if (!resp.ok && resp.status >= 500) throw new Error('GAS転送失敗 HTTP ' + resp.status);
+    // 200 以外・JSON 以外・GAS 側エラーはすべて失敗 → 500 を返して Stripe に再送させる
+    const problem = await gasForwardProblem(resp);
+    if (problem) throw new Error('GAS転送失敗: ' + problem);
     return res.status(200).json({ received: true, forwarded: true });
   } catch (err) {
     console.error('[test-webhook] GAS転送エラー:', err.message);
