@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
-    "stripe": "latest"
+    "stripe": "latest",
+    "svix": "^1.99.1"
   }
 }
